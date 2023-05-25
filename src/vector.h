@@ -5,9 +5,7 @@
 #ifndef TOY_12306_VECTOR_H
 #define TOY_12306_VECTOR_H
 
-#include "exceptions.hpp"
-#include "utility.hpp"
-
+#include "exceptions.h"
 #include <climits>
 #include <cstddef>
 

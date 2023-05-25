@@ -48,6 +48,10 @@ struct MyID {
         assert(str.size() <= 20);
         strcpy(s, str.c_str());
     }
+    MyID &operator=(const MyID &others) {
+        strcpy(s, others.s);
+        return *this;
+    }
     inline bool operator==(const MyID &y) const {
         return !strcmp(s, y.s);
     }
@@ -72,6 +76,10 @@ struct MyString {
     MyString(const std::string &str) {
         assert(str.size() <= 30);
         strcpy(s, str.c_str());
+    }
+    MyString &operator=(const MyString &others) {
+        strcpy(s, others.s);
+        return *this;
     }
     inline bool operator==(const MyString &y) const {
         return !strcmp(s, y.s);

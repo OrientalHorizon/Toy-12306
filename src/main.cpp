@@ -12,6 +12,8 @@ using std::endl;
 UserSystem userSystem;
 
 signed main() {
+//    freopen("1.in", "r", stdin);
+//    freopen("1-1.out", "w", stdout);
     std::string line;
     std::string cmd;
     bool is_first = true;
@@ -19,9 +21,10 @@ signed main() {
         std::stringstream ss;
         ss.clear();
         ss << line;
+//        cout << "6" << ss.str() << endl;
         ss >> cmd;
         // Time stamp
-        cout << cmd << endl;
+        cout << cmd << " ";
         ss >> cmd;
         if (cmd == "exit") {
             cout << "bye" << endl;
@@ -36,7 +39,7 @@ signed main() {
             std::string tmp, cur_username, username, password, name, mailAddr;
             int privilege;
             if (is_first) {
-                for (int unused = 0; unused < 4; ++unused) {
+                for (int unused = 0; unused < 6; ++unused) {
                     ss >> tmp;
                     switch (tmp[1]) {
                         case 'u': {
@@ -55,11 +58,16 @@ signed main() {
                             ss >> mailAddr;
                             break;
                         }
+                        default: {
+                            ss >> tmp;
+                            break;
+                        }
                     }
-                    privilege = 10;
-                    userSystem.AddUser("", username, password, name, mailAddr, privilege);
                 }
+                privilege = 10;
+                userSystem.AddUser("", username, password, name, mailAddr, privilege);
                 is_first = false;
+                continue;
             }
             for (int unused = 0; unused < 6; ++unused) {
                 ss >> tmp;
@@ -211,6 +219,7 @@ signed main() {
                     }
                 }
             }
+            // TODO
         }
     }
     return 0;

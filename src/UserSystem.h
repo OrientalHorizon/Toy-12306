@@ -54,7 +54,7 @@ public:
     }
     int Exists(const MyID &id, User &cur) {
         sjtu::vector<int> ret = userIndex.Find(id);
-        if (ret.empty()) return false;
+        if (ret.empty()) return -1;
         if (ret.size() > 1) throw sjtu::exception();
         _file.seekg(4 + ret[0] * sizeof(User));
         _file.read(reinterpret_cast<char *>(&cur), sizeof(cur));
@@ -68,7 +68,7 @@ public:
         MyID cur_id(ID);
         static User cur;
         int tmp_int = Logged(cur_id);
-        if (tmp_int == -1) {
+        if (tmp_int != -1) {
             cout << "-1" << endl;
             return false;
         }
@@ -90,7 +90,7 @@ public:
     bool Logout(const std::string &ID) {
         MyID cur_id(ID);
         int tmp_int = Logged(cur_id);
-        if (tmp_int != -1) {
+        if (tmp_int == -1) {
             cout << "-1" << endl;
             return false;
         }
@@ -115,7 +115,7 @@ public:
             cout << "-1" << endl;
             return false;
         }
-        if (!Logged(curuser_id)) {
+        if (Logged(curuser_id) == -1) {
             cout << "-1" << endl;
             return false;
         }
@@ -138,7 +138,7 @@ public:
             cout << "-1" << endl;
             return false;
         }
-        if (!Logged(curuser_id)) {
+        if (Logged(curuser_id) == -1) {
             cout << "-1" << endl;
             return false;
         }
@@ -173,18 +173,22 @@ public:
         MyID curuser_id(curID);
         static User cur_user, cur;
         if (Exists(curuser_id, cur_user) == -1) {
+            // cout << "?" << endl;
             cout << "-1" << endl;
             return false;
         }
-        if (!Logged(curuser_id)) {
+        if (Logged(curuser_id) == -1) {
+            // cout << "??" << endl;
             cout << "-1" << endl;
             return false;
         }
         if (cur_user.priv <= priv) {
+            // cout << "???" << endl;
             cout << "-1" << endl;
             return false;
         }
         if (Exists(cur_id, cur) != -1) {
+            // cout << "????" << endl;
             cout << "-1" << endl;
             return false;
         }

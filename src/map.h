@@ -32,8 +32,8 @@
 // only for std::less<T>
 #include <functional>
 #include <cstddef>
-#include "utility.hpp"
-#include "exceptions.hpp"
+#include <utility>
+#include "exceptions.h"
 
 namespace sjtu {
     template<
@@ -43,7 +43,7 @@ namespace sjtu {
             // 注意调用 Compare 而不是默认的小于号
     > class map {
     public:
-        typedef pair<const Key, T> value_type;
+        typedef std::pair<const Key, T> value_type;
         enum { BLACK, RED };
         struct Node {
             value_type *val;
@@ -612,7 +612,7 @@ namespace sjtu {
             if (x == &nil) {
                 Node *y = new Node();
                 Proceed(y);
-                value_type *newVal = new pair<const Key, T>(key, T());
+                value_type *newVal = new std::pair<const Key, T>(key, T());
                 y->val = newVal;
                 InternalInsert(y);
                 ++siz;
@@ -665,7 +665,7 @@ namespace sjtu {
             root = &nil; // 注意复原！
         }
 
-        pair<iterator, bool> insert(const value_type &value) {
+        std::pair<iterator, bool> insert(const value_type &value) {
             Node *x = Search(root, value.first);
             if (x == &nil) {
                 Node *z = new Node();
@@ -674,9 +674,9 @@ namespace sjtu {
                 value_type *newVal = new value_type(value);
                 z->val = newVal;
                 InternalInsert(z);
-                return pair<iterator, bool>(iterator(this, z), true);
+                return std::make_pair(iterator(this, z), true);
             }
-            return pair<iterator, bool>(iterator(this, x), false);
+            return std::make_pair(iterator(this, x), false);
         }
         void erase(iterator pos) {
             if (pos.cur != this || pos.ptr == &nil || pos.ptr == nullptr) {
