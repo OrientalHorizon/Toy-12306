@@ -12,8 +12,9 @@ protected:
 	const std::string variant = "";
 	std::string detail = "";
 public:
-	exception() {}
+	exception() = default;
 	exception(const exception &ec) : variant(ec.variant), detail(ec.detail) {}
+    exception(const std::string &v, const std::string &d) : variant(v), detail(d) {}
 	virtual std::string what() {
 		return variant + " " + detail;
 	}

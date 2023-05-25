@@ -5,11 +5,14 @@
 #include "UserSystem.h"
 #include "TokenScanner.h"
 #include "BPT.h"
+#include "TrainSystem.h"
+
 using std::cin;
 using std::cout;
 using std::endl;
 
 UserSystem userSystem;
+TrainSystem trainSystem;
 
 signed main() {
 //    freopen("1.in", "r", stdin);
@@ -140,7 +143,7 @@ signed main() {
             userSystem.QueryProfile(cur_username, username);
         }
         else if (cmd == "modify_profile") {
-            std::string tmp = "", cur_username = "", username = "", password = "", name = "", mailAddr = "";
+            std::string tmp, cur_username, username, password, name, mailAddr;
             int privilege = -1;
             while (ss >> tmp) {
                 switch (tmp[1]) {
@@ -173,7 +176,9 @@ signed main() {
             userSystem.ModifyProfile(cur_username, username, password, name, mailAddr, privilege);
         }
         else if (cmd == "add_train") {
-            std::string tmp, trainID, stationNum, seatNum, stations, prices, startTime, travelTimes, stopoverTimes, saleDate, type;
+            std::string tmp, trainID, stations, prices, startTime, travelTimes, stopoverTimes, saleDate;
+            int stationNum, seatNum;
+            char _type;
             for (int unused = 0; unused < 10; ++unused) {
                 ss >> tmp;
                 switch (tmp[1]) {
@@ -214,13 +219,100 @@ signed main() {
                         break;
                     }
                     case 'y': {
-                        ss >> type;
+                        ss >> _type;
                         break;
                     }
                 }
             }
-            // TODO
+            trainSystem.AddTrain(trainID, stationNum, seatNum, stations, prices, startTime, travelTimes, stopoverTimes, saleDate, _type);
         }
+        else if (cmd == "delete_train") {
+            std::string tmp, trainID;
+            ss >> tmp >> trainID;
+            trainSystem.DeleteTrain(trainID);
+        }
+        else if (cmd == "release_train") {
+            std::string tmp, trainID;
+            ss >> tmp >> trainID;
+            trainSystem.ReleaseTrain(trainID);
+        }
+        else if (cmd == "query_train") {
+            std::string tmp, trainID, date;
+            for (int unused = 0; unused < 2; ++unused) {
+                cin >> tmp;
+                switch (tmp[1]) {
+                    case 'i': {
+                        cin >> trainID;
+                        break;
+                    }
+                    case 'd': {
+                        cin >> date;
+                        break;
+                    }
+                }
+            }
+            trainSystem.QueryTrain(trainID, date);
+        }
+//        else if (cmd == "query_ticket") {
+//            std::string tmp, date, from, to, _type;
+//            ss >> tmp >> date >> from >> to >> _type;
+//            trainSystem.QueryTicket(date, from, to, _type);
+//        }
+//        else if (cmd == "query_transfer") {
+//            std::string tmp, date, from, to;
+//            ss >> tmp >> date >> from >> to;
+//            trainSystem.QueryTransfer(date, from, to);
+//        }
+//        else if (cmd == "buy_ticket") {
+//            std::string tmp, cur_username, trainID, date, from, to;
+//            int num;
+//            char _type;
+//            for (int unused = 0; unused < 6; ++unused) {
+//                ss >> tmp;
+//                switch (tmp[1]) {
+//                    case 'c': {
+//                        ss >> cur_username;
+//                        break;
+//                    }
+//                    case 'i': {
+//                        ss >> trainID;
+//                        break;
+//                    }
+//                    case 'd': {
+//                        ss >> date;
+//                        break;
+//                    }
+//                    case 'n': {
+//                        ss >> num;
+//                        break;
+//                    }
+//                    case 'f': {
+//                        ss >> from;
+//                        break;
+//                    }
+//                    case 't': {
+//                        ss >> to;
+//                        break;
+//                    }
+//                    case 'y': {
+//                        ss >> _type;
+//                        break;
+//                    }
+//                }
+//            }
+//            trainSystem.BuyTicket(cur_username, trainID, date, num, from, to, _type);
+//        }
+//        else if (cmd == "query_order") {
+//            std::string tmp, cur_username;
+//            ss >> tmp >> cur_username;
+//            trainSystem.QueryOrder(cur_username);
+//        }
+//        else if (cmd == "refund_ticket") {
+//            std::string tmp, cur_username;
+//            int num;
+//            ss >> tmp >> cur_username >> num;
+//            trainSystem.RefundTicket(cur_username, num);
+//        }
     }
     return 0;
 }

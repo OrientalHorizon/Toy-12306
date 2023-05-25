@@ -13,7 +13,7 @@ class Date {
 private:
     int date;
 public:
-    Date() : date(0) {}
+    explicit Date() : date(0) {}
     Date(const std::string &str) {
         // mm-dd
         int month = (str[0] - '0') * 10 + str[1] - '0';
@@ -45,15 +45,40 @@ public:
     inline bool operator<=(const Date &y) const {
         return date <= y.date;
     }
-    inline Date &operator++() {
+    Date &operator++() {
         ++date;
         if (date > 365) throw sjtu::index_out_of_bound();
         return *this;
     }
-    inline Date &operator--() {
+    Date &operator--() {
         --date;
         if (date < 1) throw sjtu::index_out_of_bound();
         return *this;
+    }
+    Date operator+(int x) const {
+        Date tmp = *this;
+        tmp.date += x;
+        if (tmp.date > 365) throw sjtu::index_out_of_bound();
+        return tmp;
+    }
+    Date operator-(int x) const {
+        Date tmp = *this;
+        tmp.date -= x;
+        if (tmp.date < 1) throw sjtu::index_out_of_bound();
+        return tmp;
+    }
+    Date &operator+=(int x) {
+        date += x;
+        if (date > 365) throw sjtu::index_out_of_bound();
+        return *this;
+    }
+    Date &operator-=(int x) {
+        date -= x;
+        if (date < 1) throw sjtu::index_out_of_bound();
+        return *this;
+    }
+    int operator-(const Date &y) const {
+        return date - y.date;
     }
 };
 class Time {
@@ -77,7 +102,7 @@ public:
         std::string str;
         str.push_back((p.first / 10) + '0');
         str.push_back((p.first % 10) + '0');
-        str.push_back('-');
+        str.push_back(':');
         str.push_back((p.second / 10) + '0');
         str.push_back((p.second % 10) + '0');
         return str;
@@ -91,7 +116,7 @@ public:
     inline bool operator<=(const Time &y) const {
         return _time <= y._time;
     }
-    inline Time &operator++() {
+    Time &operator++() {
         ++_time;
         if (_time >= 1440) {
             _time -= 1440;
@@ -99,7 +124,7 @@ public:
         }
         return *this;
     }
-    inline Time &operator--() {
+    Time &operator--() {
         --_time;
         if (_time < 0) {
             _time += 1440;
@@ -136,6 +161,9 @@ public:
             --delta_day;
         }
         return *this;
+    }
+    int operator-(const Time &y) const {
+        return (_time - y._time) + (delta_day - y.delta_day) * 1440;
     }
 };
 class DateTime {
@@ -194,6 +222,9 @@ public:
         }
         return *this;
     }
+    int operator-(const DateTime &y) const {
+        return (date - y.date) * 1440 + (_time - y._time);
+    }
     std::pair<int, int> GetDate() const {
         int month = upper_bound(days, 0, 12, date);
         int day = date - days[month - 1];
@@ -201,6 +232,23 @@ public:
     }
     std::pair<int, int> GetTime() const {
         return std::make_pair(_time / 60, _time % 60);
+    }
+    std::string ToString() const {
+        std::pair<int, int> p = GetDate();
+        std::string str;
+        str.push_back((p.first / 10) + '0');
+        str.push_back((p.first % 10) + '0');
+        str.push_back('-');
+        str.push_back((p.second / 10) + '0');
+        str.push_back((p.second % 10) + '0');
+        str.push_back(' ');
+        p = GetTime();
+        str.push_back((p.first / 10) + '0');
+        str.push_back((p.first % 10) + '0');
+        str.push_back(':');
+        str.push_back((p.second / 10) + '0');
+        str.push_back((p.second % 10) + '0');
+        return str;
     }
 };
 

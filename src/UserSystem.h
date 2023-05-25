@@ -55,7 +55,7 @@ public:
     int Exists(const MyID &id, User &cur) {
         sjtu::vector<int> ret = userIndex.Find(id);
         if (ret.empty()) return -1;
-        if (ret.size() > 1) throw sjtu::exception();
+        if (ret.size() > 1) throw sjtu::exception("exception", "UserSystem::Exists: ret.size() > 1");
         _file.seekg(4 + ret[0] * sizeof(User));
         _file.read(reinterpret_cast<char *>(&cur), sizeof(cur));
         return ret[0];
@@ -164,7 +164,7 @@ public:
             cur.name = name;
             cur.mailAddr = mailAddr;
             cur.priv = 10;
-            userIndex.realInsert(Element<MyID, int>(cur_id, ++n));
+            userIndex.realInsert(std::pair<MyID, int>(cur_id, ++n));
             _file.seekp(4 + n * sizeof(User));
             _file.write(reinterpret_cast<const char *>(&cur), sizeof(cur));
             cout << "0" << endl;
@@ -197,7 +197,7 @@ public:
         cur.name = name;
         cur.mailAddr = mailAddr;
         cur.priv = priv;
-        userIndex.realInsert(Element<MyID, int>(cur_id, ++n));
+        userIndex.realInsert(std::pair<MyID, int>(cur_id, ++n));
         _file.seekp(4 + n * sizeof(User));
         _file.write(reinterpret_cast<const char *>(&cur), sizeof(cur));
         cout << "0" << endl;

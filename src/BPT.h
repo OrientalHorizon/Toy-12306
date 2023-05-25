@@ -56,55 +56,55 @@ using std::endl;
 //    return x;
 //}
 
-template<class keyType, class valueType>
-struct Element {
-    keyType str;
-    valueType val;
-    Element() = default;
-    Element(const keyType &t, const valueType &v) {
-        str = t;
-        val = v;
-    }
-    Element &operator=(const Element &x) {
-        if (this == &x) return *this;
-        str = x.str;
-        val = x.val;
-        return *this;
-    }
-};
-template<class keyType, class valueType>
-bool operator==(const Element<keyType, valueType> &a, const Element<keyType, valueType> &b) {
-    if (!(a.str == b.str)) {
-        return false;
-    }
-    return a.val == b.val;
-}
-template<class keyType, class valueType>
-bool operator!=(const Element<keyType, valueType> &a, const Element<keyType, valueType> &b) {
-    return !(a == b);
-}
-template<class keyType, class valueType>
-bool operator<(const Element<keyType, valueType> &a, const Element<keyType, valueType> &b) {
-    if (!(a.str == b.str)) {
-        return (a.str < b.str);
-    }
-    return a.val < b.val;
-}
-template<class keyType, class valueType>
-bool operator>(const Element<keyType, valueType> &a, const Element<keyType, valueType> &b) {
-    if (!(a.str == b.str)) {
-        return !(a.str < b.str);
-    }
-    return b.val < a.val;
-}
-template<class keyType, class valueType>
-bool operator<=(const Element<keyType, valueType> &a, const Element<keyType, valueType> &b) {
-    return !(a > b);
-}
-template<class keyType, class valueType>
-bool operator>=(const Element<keyType, valueType> &a, const Element<keyType, valueType> &b) {
-    return !(a < b);
-}
+//template<class keyType, class valueType>
+//struct Element {
+//    keyType str;
+//    valueType val;
+//    Element() = default;
+//    Element(const keyType &t, const valueType &v) {
+//        str = t;
+//        val = v;
+//    }
+//    Element &operator=(const Element &x) {
+//        if (this == &x) return *this;
+//        str = x.str;
+//        val = x.val;
+//        return *this;
+//    }
+//};
+//template<class keyType, class valueType>
+//bool operator==(const Element<keyType, valueType> &a, const Element<keyType, valueType> &b) {
+//    if (!(a.str == b.str)) {
+//        return false;
+//    }
+//    return a.val == b.val;
+//}
+//template<class keyType, class valueType>
+//bool operator!=(const Element<keyType, valueType> &a, const Element<keyType, valueType> &b) {
+//    return !(a == b);
+//}
+//template<class keyType, class valueType>
+//bool operator<(const Element<keyType, valueType> &a, const Element<keyType, valueType> &b) {
+//    if (!(a.str == b.str)) {
+//        return (a.str < b.str);
+//    }
+//    return a.val < b.val;
+//}
+//template<class keyType, class valueType>
+//bool operator>(const Element<keyType, valueType> &a, const Element<keyType, valueType> &b) {
+//    if (!(a.str == b.str)) {
+//        return !(a.str < b.str);
+//    }
+//    return b.val < a.val;
+//}
+//template<class keyType, class valueType>
+//bool operator<=(const Element<keyType, valueType> &a, const Element<keyType, valueType> &b) {
+//    return !(a > b);
+//}
+//template<class keyType, class valueType>
+//bool operator>=(const Element<keyType, valueType> &a, const Element<keyType, valueType> &b) {
+//    return !(a < b);
+//}
 
 const int MaxSize = 120, MinSize = 60;
 template<class keyType, class valueType>
@@ -114,7 +114,7 @@ struct Block {
     int nxt = -1; // 如果它是叶结点，那么它的下一个块是谁（方便从底层遍历）
     // 注意指针个数会比元素个数多一个
     // 这里记录元素个数！！！！！
-    Element<keyType, valueType> ele[MaxSize + 2];
+    std::pair<keyType, valueType> ele[MaxSize + 2];
     int chd[MaxSize + 3]; // 下属的块在哪个位置
     Block() = default;
 };
@@ -162,8 +162,8 @@ private:
         _file.write(reinterpret_cast<const char *>(&(blk.siz)), sizeof(blk.siz));
     }
 
-    Element<keyType, valueType> pass;
-    bool InternalInsert(Block<keyType, valueType> &cur, int pos, const Element<keyType, valueType> &ele) {
+    std::pair<keyType, valueType> pass;
+    bool InternalInsert(Block<keyType, valueType> &cur, int pos, const std::pair<keyType, valueType> &ele) {
         // 注意比最后一个元素大要不要特判
         if (cur.isLeaf) {
             int l = 0, r = cur.siz;
@@ -297,7 +297,7 @@ private:
         return true;
     }
 
-    bool InternalDelete(Block<keyType, valueType> &cur, int pos, const Element<keyType, valueType> &ele) {
+    bool InternalDelete(Block<keyType, valueType> &cur, int pos, const std::pair<keyType, valueType> &ele) {
         if (cur.isLeaf) {
             int l = 0, r = cur.siz;
             while (l < r) {
@@ -636,7 +636,7 @@ public:
 //        }
 //    }
 
-    void realInsert(const Element<keyType, valueType> &ele) {
+    void realInsert(const std::pair<keyType, valueType> &ele) {
         if (root == -1) {
             root = nowsize = 0;
             static Block<keyType, valueType> cur;
@@ -652,7 +652,7 @@ public:
         InternalInsert(cur, root, ele);
     }
 
-    void realDelete(const Element<keyType, valueType> &ele) {
+    void realDelete(const std::pair<keyType, valueType> &ele) {
         if (root == -1) return;
         static Block<keyType, valueType> cur;
         ReadAll(root, cur);
@@ -709,7 +709,7 @@ public:
             int l = 0, r = cur.siz;
             while (l < r) {
                 int mid = (l + r) >> 1;
-                if (!(cur.ele[mid].str < key)) {
+                if (!(cur.ele[mid].first < key)) {
                     r = mid;
                 } else {
                     l = mid + 1;
@@ -722,7 +722,7 @@ public:
         int l = 0, r = cur.siz;
         while (l < r) {
             int mid = (l + r) >> 1;
-            if (!(cur.ele[mid].str < key)) {
+            if (!(cur.ele[mid].first < key)) {
                 r = mid;
             } else {
                 l = mid + 1;
@@ -730,19 +730,19 @@ public:
         }
         if (l > 0) --l;
         // l 为第一个可能值
-        if (l < cur.siz && key < cur.ele[l].str) {
+        if (l < cur.siz && key < cur.ele[l].first) {
             return sjtu::vector<valueType>();
         }
         bool flag = false, flag2 = false;
         while (true) {
             for (int i = l; i < cur.siz; ++i) {
-                if (key < cur.ele[i].str) {
+                if (key < cur.ele[i].first) {
                     flag = true;
                     break;
                 }
-                if (key == cur.ele[i].str) {
+                if (key == cur.ele[i].first) {
                     flag2 = true;
-                    ret.push_back(cur.ele[i].val);
+                    ret.push_back(cur.ele[i].second);
                 }
             }
             if (flag) break;
