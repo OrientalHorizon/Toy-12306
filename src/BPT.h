@@ -1,8 +1,10 @@
-#ifndef BPlus_TREE
-#define BPlus_TREE
+#ifndef TOY_12306_BPlus_TREE
+#define TOY_12306_BPlus_TREE
 #include <iostream>
 #include <fstream>
 #include <cstring>
+#include <cassert>
+#include "vector.h"
 
 // Modified on 2023/4/30
 // 最后一次更改：二分后边界条件特判
@@ -11,48 +13,48 @@ using std::cin;
 using std::cout;
 using std::endl;
 
-class myString {
-private:
-    char s[66];
-public:
-    myString() = default;
-    myString(const char* t) {
-        strcpy(s, t);
-    }
-    myString &operator=(const myString &x) {
-        // assert(strlen(x.s) <= 64);
-        if (this == &x) return *this;
-        strcpy(s, x.s);
-        return *this;
-    }
-    friend bool operator==(const myString &x, const myString &y);
-    friend bool operator<(const myString &x, const myString &y);
-    friend std::ostream& operator<<(std::ostream &x, const myString &y);
-};
-bool operator==(const myString &x, const myString &y) {
-    return (!strcmp(x.s, y.s));
-}
-bool operator!=(const myString &x, const myString &y) {
-    return !(x == y);
-}
-bool operator<(const myString &x, const myString &y) {
-    return (strcmp(x.s, y.s) < 0);
-}
-
-bool operator>(const myString &x, const myString &y) {
-    return (y < x);
-}
-bool operator<=(const myString &x, const myString &y) {
-    return !(x > y);
-}
-
-bool operator>=(const myString &x, const myString &y) {
-    return !(x < y);
-}
-std::ostream& operator<<(std::ostream &x, const myString &y) {
-    x << y.s;
-    return x;
-}
+//class myString {
+//private:
+//    char s[66];
+//public:
+//    myString() = default;
+//    myString(const char* t) {
+//        strcpy(s, t);
+//    }
+//    myString &operator=(const myString &x) {
+//        // assert(strlen(x.s) <= 64);
+//        if (this == &x) return *this;
+//        strcpy(s, x.s);
+//        return *this;
+//    }
+//    friend bool operator==(const myString &x, const myString &y);
+//    friend bool operator<(const myString &x, const myString &y);
+//    friend std::ostream& operator<<(std::ostream &x, const myString &y);
+//};
+//bool operator==(const myString &x, const myString &y) {
+//    return (!strcmp(x.s, y.s));
+//}
+//bool operator!=(const myString &x, const myString &y) {
+//    return !(x == y);
+//}
+//bool operator<(const myString &x, const myString &y) {
+//    return (strcmp(x.s, y.s) < 0);
+//}
+//
+//bool operator>(const myString &x, const myString &y) {
+//    return (y < x);
+//}
+//bool operator<=(const myString &x, const myString &y) {
+//    return !(x > y);
+//}
+//
+//bool operator>=(const myString &x, const myString &y) {
+//    return !(x < y);
+//}
+//std::ostream& operator<<(std::ostream &x, const myString &y) {
+//    x << y.s;
+//    return x;
+//}
 
 template<class keyType, class valueType>
 struct Element {
@@ -93,7 +95,7 @@ bool operator>(const Element<keyType, valueType> &a, const Element<keyType, valu
     if (!(a.str == b.str)) {
         return !(a.str < b.str);
     }
-    return a.val > b.val;
+    return b.val < a.val;
 }
 template<class keyType, class valueType>
 bool operator<=(const Element<keyType, valueType> &a, const Element<keyType, valueType> &b) {
@@ -114,6 +116,7 @@ struct Block {
     // 这里记录元素个数！！！！！
     Element<keyType, valueType> ele[MaxSize + 2];
     int chd[MaxSize + 3]; // 下属的块在哪个位置
+    Block() = default;
 };
 
 template<class keyType, class valueType>
@@ -122,17 +125,17 @@ private:
     int nowsize = -1; // 最后一个块的位置
     std::fstream _file;
     std::string _filename;
-    void rdall(int pos, Block<keyType, valueType> &blk) {
+    void ReadAll(int pos, Block<keyType, valueType> &blk) {
         if (pos < 0) exit(-1);
         _file.seekg(pos * sizeof(Block<keyType, valueType>) + sizeof(int) * 2);
         _file.read(reinterpret_cast<char *>(&blk), sizeof(blk));
     }
-    void wtall(int pos, const Block<keyType, valueType> &blk) {
+    void WriteAll(int pos, const Block<keyType, valueType> &blk) {
         if (pos < 0) exit(-1);
         _file.seekp(pos * sizeof(Block<keyType, valueType>) + sizeof(int) * 2);
         _file.write(reinterpret_cast<const char *>(&blk), sizeof(blk));
     }
-    void rdfirst(int pos, Block<keyType, valueType> &blk) {
+    void ReadFirst(int pos, Block<keyType, valueType> &blk) {
         if (pos < 0) exit(-1);
         _file.seekg(pos * sizeof(Block<keyType, valueType>) + sizeof(int) * 2);
         _file.read(reinterpret_cast<char *>(&(blk.isLeaf)), sizeof(blk.isLeaf));
@@ -140,7 +143,7 @@ private:
         _file.read(reinterpret_cast<char *>(&(blk.nxt)), sizeof(blk.nxt));
         _file.read(reinterpret_cast<char *>(&(blk.ele)), sizeof(blk.ele));
     }
-    void wtfirst(int pos, const Block<keyType, valueType> &blk) {
+    void WriteFirst(int pos, const Block<keyType, valueType> &blk) {
         if (pos < 0) exit(-1);
         _file.seekp(pos * sizeof(Block<keyType, valueType>) + sizeof(int) * 2);
         _file.write(reinterpret_cast<const char *>(&(blk.isLeaf)), sizeof(blk.isLeaf));
@@ -148,12 +151,12 @@ private:
         _file.write(reinterpret_cast<const char *>(&(blk.nxt)), sizeof(blk.nxt));
         _file.write(reinterpret_cast<const char *>(&(blk.ele)), sizeof(blk.ele));
     }
-    void rdsize(int pos, Block<keyType, valueType> &blk) {
+    void ReadSize(int pos, Block<keyType, valueType> &blk) {
         if (pos < 0) exit(-1);
         _file.seekg(pos * sizeof(Block<keyType, valueType>) + sizeof(int) * 3);
         _file.read(reinterpret_cast<char *>(&(blk.siz)), sizeof(blk.siz));
     }
-    void wtsize(int pos, const Block<keyType, valueType> &blk) {
+    void WriteSize(int pos, const Block<keyType, valueType> &blk) {
         if (pos < 0) exit(-1);
         _file.seekp(pos * sizeof(Block<keyType, valueType>) + sizeof(int) * 3);
         _file.write(reinterpret_cast<const char *>(&(blk.siz)), sizeof(blk.siz));
@@ -184,7 +187,7 @@ private:
                 }
                 ++cur.siz;
                 cur.ele[l] = ele;
-                wtfirst(pos, cur);
+                WriteFirst(pos, cur);
                 // 可不可能出现要调整头顶上值的情况？
                 // 貌似不会
                 return false; // 不调整
@@ -213,14 +216,14 @@ private:
                 newroot.ele[0] = cur.ele[MinSize];
                 newroot.chd[0] = pos;
                 newroot.chd[1] = nowsize;
-                wtfirst(pos, cur);
-                wtfirst(nowsize, blk);
-                wtall(++nowsize, newroot);
+                WriteFirst(pos, cur);
+                WriteFirst(nowsize, blk);
+                WriteAll(++nowsize, newroot);
                 root = nowsize;
                 return false;
             }
-            wtall(pos, cur);
-            wtall(nowsize, blk);
+            WriteAll(pos, cur);
+            WriteAll(nowsize, blk);
             pass = blk.ele[0];
             return true; // 调整
         }
@@ -241,7 +244,7 @@ private:
         }
         // 就是 l
         Block<keyType, valueType> child;
-        rdall(cur.chd[l], child);
+        ReadAll(cur.chd[l], child);
         bool state = InternalInsert(child, cur.chd[l], ele);
         if (!state) return false;
 
@@ -253,7 +256,7 @@ private:
             ++cur.siz;
             cur.ele[l] = pass;
             cur.chd[l + 1] = nowsize;
-            wtall(pos, cur);
+            WriteAll(pos, cur);
             return false;
         }
         // 继续裂块
@@ -283,14 +286,14 @@ private:
             newroot.ele[0] = pass;
             newroot.chd[0] = pos;
             newroot.chd[1] = nowsize;
-            wtall(pos, cur);
-            wtall(nowsize, blk);
-            wtall(++nowsize, newroot);
+            WriteAll(pos, cur);
+            WriteAll(nowsize, blk);
+            WriteAll(++nowsize, newroot);
             root = nowsize;
             return false;
         }
-        wtall(pos, cur);
-        wtall(nowsize, blk);
+        WriteAll(pos, cur);
+        WriteAll(nowsize, blk);
         return true;
     }
 
@@ -315,9 +318,9 @@ private:
             }
             --cur.siz;
             if (pos == root) {
-                wtall(pos, cur);
+                WriteAll(pos, cur);
             }
-            wtfirst(pos, cur);
+            WriteFirst(pos, cur);
             if (cur.siz < MinSize) {
                 return true; // 并块
             }
@@ -342,7 +345,7 @@ private:
         }
         // 就是 l
         Block<keyType, valueType> child;
-        rdall(cur.chd[l], child);
+        ReadAll(cur.chd[l], child);
         bool state = InternalDelete(child, cur.chd[l], ele);
         if (!state) return false;
 
@@ -351,12 +354,12 @@ private:
         // 特判根！如果根的孩子要并块且并完只剩一个块，那么这个根消灭
         if (pos == root && cur.siz == 1) {
             static Block<keyType, valueType> blk[2];
-            rdsize(cur.chd[0], blk[0]);
-            rdsize(cur.chd[1], blk[1]);
+            ReadSize(cur.chd[0], blk[0]);
+            ReadSize(cur.chd[1], blk[1]);
             if (blk[0].siz + blk[1].siz < MaxSize) {
                 // 并块！
-                rdall(cur.chd[0], blk[0]);
-                rdall(cur.chd[1], blk[1]);
+                ReadAll(cur.chd[0], blk[0]);
+                ReadAll(cur.chd[1], blk[1]);
                 if (blk[0].isLeaf) {
                     for (int i = 0; i < blk[1].siz; ++i) {
                         blk[0].ele[i + blk[0].siz] = blk[1].ele[i];
@@ -364,7 +367,7 @@ private:
                     blk[0].siz += blk[1].siz;
                     blk[0].nxt = blk[1].nxt;
                     root = cur.chd[0];
-                    wtfirst(cur.chd[0], blk[0]);
+                    WriteFirst(cur.chd[0], blk[0]);
                     return false;
                 }
                 for (int i = 0; i < blk[1].siz; ++i) {
@@ -375,18 +378,18 @@ private:
                 blk[0].ele[blk[0].siz] = cur.ele[0];
                 blk[0].siz += blk[1].siz + 1;
                 root = cur.chd[0];
-                wtall(cur.chd[0], blk[0]);
+                WriteAll(cur.chd[0], blk[0]);
                 return false;
             }
         }
         if (l > 0) {
             // 考虑和左边借元素 / 合并
             static Block<keyType, valueType> blk;
-            rdsize(cur.chd[l - 1], blk);
+            ReadSize(cur.chd[l - 1], blk);
             if (blk.siz > MinSize) {
                 // 从左边借一个
                 if (child.isLeaf) {
-                    rdfirst(cur.chd[l - 1], blk);
+                    ReadFirst(cur.chd[l - 1], blk);
                     for (int i = child.siz - 1; i >= 0; --i) {
                         child.ele[i + 1] = child.ele[i];
                     }
@@ -394,12 +397,12 @@ private:
                     ++child.siz;
                     --blk.siz;
                     cur.ele[l - 1] = child.ele[0];
-                    wtall(pos, cur);
-                    wtsize(cur.chd[l - 1], blk);
-                    wtfirst(cur.chd[l], child);
+                    WriteAll(pos, cur);
+                    WriteSize(cur.chd[l - 1], blk);
+                    WriteFirst(cur.chd[l], child);
                     return false;
                 }
-                rdall(cur.chd[l - 1], blk);
+                ReadAll(cur.chd[l - 1], blk);
                 for (int i = child.siz; i >= 1; --i) {
                     child.ele[i] = child.ele[i - 1];
                     child.chd[i + 1] = child.chd[i];
@@ -410,14 +413,14 @@ private:
                 child.chd[0] = blk.chd[blk.siz];
                 cur.ele[l - 1] = blk.ele[blk.siz - 1];
                 --blk.siz;
-                wtall(pos, cur);
-                wtsize(cur.chd[l - 1], blk);
-                wtall(cur.chd[l], child);
+                WriteAll(pos, cur);
+                WriteSize(cur.chd[l - 1], blk);
+                WriteAll(cur.chd[l], child);
                 return false;
             }
             // 和左边合并
             if (child.isLeaf) {
-                rdfirst(cur.chd[l - 1], blk);
+                ReadFirst(cur.chd[l - 1], blk);
                 for (int i = 0; i < child.siz; ++i) {
                     blk.ele[i + blk.siz] = child.ele[i];
                 }
@@ -429,12 +432,12 @@ private:
                 }
                 --cur.siz;
                 blk.nxt = child.nxt;
-                wtall(pos, cur);
-                wtfirst(cur.chd[l - 1], blk);
+                WriteAll(pos, cur);
+                WriteFirst(cur.chd[l - 1], blk);
                 if (cur.siz < MinSize) return true;
                 return false;
             }
-            rdall(cur.chd[l - 1], blk);
+            ReadAll(cur.chd[l - 1], blk);
             for (int i = 0; i < child.siz; ++i) {
                 blk.ele[i + blk.siz + 1] = child.ele[i];
                 blk.chd[i + blk.siz + 1] = child.chd[i];
@@ -447,19 +450,19 @@ private:
                 cur.chd[i + 1] = cur.chd[i + 2];
             }
             --cur.siz;
-            wtall(pos, cur);
-            wtall(cur.chd[l - 1], blk);
+            WriteAll(pos, cur);
+            WriteAll(cur.chd[l - 1], blk);
             if (cur.siz < MinSize) return true;
             return false;
         }
         else if (l < cur.siz) {
             // 和右边借元素 / 合并
             static Block<keyType, valueType> blk;
-            rdsize(cur.chd[l + 1], blk);
+            ReadSize(cur.chd[l + 1], blk);
             if (blk.siz > MinSize) {
                 // 从右边借一个
                 if (child.isLeaf) {
-                    rdfirst(cur.chd[l + 1], blk);
+                    ReadFirst(cur.chd[l + 1], blk);
                     child.ele[child.siz] = blk.ele[0];
                     ++child.siz;
                     for (int i = 0; i < blk.siz - 1; ++i) {
@@ -467,12 +470,12 @@ private:
                     }
                     --blk.siz;
                     cur.ele[l] = blk.ele[0];
-                    wtall(pos, cur);
-                    wtfirst(cur.chd[l], child);
-                    wtfirst(cur.chd[l + 1], blk);
+                    WriteAll(pos, cur);
+                    WriteFirst(cur.chd[l], child);
+                    WriteFirst(cur.chd[l + 1], blk);
                     return false;
                 }
-                rdall(cur.chd[l + 1], blk);
+                ReadAll(cur.chd[l + 1], blk);
                 child.ele[child.siz] = cur.ele[l];
                 child.chd[child.siz + 1] = blk.chd[0];
                 ++child.siz;
@@ -483,14 +486,14 @@ private:
                 }
                 blk.chd[blk.siz - 1] = blk.chd[blk.siz];
                 --blk.siz;
-                wtall(pos, cur);
-                wtall(cur.chd[l], child);
-                wtall(cur.chd[l + 1], blk);
+                WriteAll(pos, cur);
+                WriteAll(cur.chd[l], child);
+                WriteAll(cur.chd[l + 1], blk);
                 return false;
             }
             // 和右边合并
             if (child.isLeaf) {
-                rdfirst(cur.chd[l + 1], blk);
+                ReadFirst(cur.chd[l + 1], blk);
                 for (int i = 0; i < blk.siz; ++i) {
                     child.ele[i + child.siz] = blk.ele[i];
                 }
@@ -502,12 +505,12 @@ private:
                 }
                 --cur.siz;
                 child.nxt = blk.nxt;
-                wtall(pos, cur);
-                wtfirst(cur.chd[l], child);
+                WriteAll(pos, cur);
+                WriteFirst(cur.chd[l], child);
                 if (cur.siz < MinSize) return true;
                 return false;
             }
-            rdall(cur.chd[l + 1], blk);
+            ReadAll(cur.chd[l + 1], blk);
             for (int i = 0; i < blk.siz; ++i) {
                 child.ele[i + child.siz + 1] = blk.ele[i];
                 child.chd[i + child.siz + 1] = blk.chd[i];
@@ -520,8 +523,8 @@ private:
                 cur.chd[i + 1] = cur.chd[i + 2];
             }
             --cur.siz;
-            wtall(pos, cur);
-            wtall(cur.chd[l], child);
+            WriteAll(pos, cur);
+            WriteAll(cur.chd[l], child);
             if (cur.siz < MinSize) return true;
             return false;
         }
@@ -562,17 +565,143 @@ public:
         _file.close();
     }
 
-    void find(const keyType &key) {
-        // 问题：头顶上是 51，结果右侧儿子的最小值居然是 50！
+//    void find(const keyType &key) {
+//        // 问题：头顶上是 51，结果右侧儿子的最小值居然是 50！
+//        if (root == -1) {
+//            cout << "null\n";
+//            return;
+//        }
+//        static Block<keyType, valueType> cur;
+//        cur.isLeaf = false;
+//        int pos = root;
+//        while (true) {
+//            ReadAll(pos, cur);
+//            if (cur.isLeaf) {
+//                break;
+//            }
+//            // 二分
+//            int l = 0, r = cur.siz;
+//            while (l < r) {
+//                int mid = (l + r) >> 1;
+//                if (cur.ele[mid].str >= key) {
+//                    r = mid;
+//                }
+//                else {
+//                    l = mid + 1;
+//                }
+//            }
+//            // 就是 l
+//            pos = cur.chd[l];
+//        }
+//
+//        int l = 0, r = cur.siz;
+//        while (l < r) {
+//            int mid = (l + r) >> 1;
+//            if (cur.ele[mid].str >= key) {
+//                r = mid;
+//            }
+//            else {
+//                l = mid + 1;
+//            }
+//        }
+//        if (l > 0) --l;
+//        // l 为第一个可能值
+//        if (l < cur.siz && key < cur.ele[l].str) {
+//            cout << "null\n";
+//            return;
+//        }
+//        bool flag = false, flag2 = false;
+//        while (true) {
+//            for (int i = l; i < cur.siz; ++i) {
+//                if (key < cur.ele[i].str) {
+//                    flag = true;
+//                    break;
+//                }
+//                if (key == cur.ele[i].str) {
+//                    flag2 = true;
+//                    cout << cur.ele[i].val << " ";
+//                }
+//            }
+//            if (flag) break;
+//            pos = cur.nxt;
+//            if (pos == -1) break;
+//            ReadFirst(pos, cur);
+//            l = 0;
+//        }
+//        if (flag2) {
+//            cout << "\n";
+//        }
+//        else {
+//            cout << "null\n";
+//        }
+//    }
+
+    void realInsert(const Element<keyType, valueType> &ele) {
         if (root == -1) {
-            cout << "null\n";
+            root = nowsize = 0;
+            static Block<keyType, valueType> cur;
+            cur.siz = 1;
+            cur.ele[0] = ele;
+            cur.isLeaf = true;
+            cur.nxt = -1;
+            WriteFirst(nowsize, cur);
             return;
         }
+        Block<keyType, valueType> cur;
+        ReadAll(root, cur);
+        InternalInsert(cur, root, ele);
+    }
+
+    void realDelete(const Element<keyType, valueType> &ele) {
+        if (root == -1) return;
+        static Block<keyType, valueType> cur;
+        ReadAll(root, cur);
+        InternalDelete(cur, root, ele);
+    }
+
+//    void findall() {
+//        int pos = root;
+//        static Block<keyType, valueType> cur;
+//        cur.isLeaf = false;
+//        while (cur.isLeaf == false) {
+//            ReadAll(pos, cur);
+//            pos = cur.chd[0];
+//        }
+//        while (pos != -1) {
+//            std::cout << "new node, id = " << pos << std::endl;
+//            ReadAll(pos, cur);
+//            for (int i = 0; i < cur.siz; ++i) {
+//                std::cout << cur.ele[i].str << ' ' << cur.ele[i].val << std::endl;
+//            }
+//            pos = cur.nxt;
+//        }
+//        // 现在遍历整个树结构
+//        cout << "root = " << root << endl;
+//        cout << "nowsize = " << nowsize << endl;
+//        for (int i = 0; i <= nowsize; ++i) {
+//            cout << "point:" << i << endl;
+//            ReadAll(i, cur);
+//            cout << "siz" << cur.siz << endl;
+//            for (int j = 0; j < cur.siz; ++j) {
+//                cout << cur.ele[j].str << ' ' << cur.ele[j].val << endl;
+//            }
+//            if (cur.isLeaf) continue;
+//            for (int j = 0; j <= cur.siz; ++j) {
+//                cout << cur.chd[j] << ' ';
+//            }
+//            cout << endl;
+//        }
+//    }
+    sjtu::vector<valueType> Find(const keyType &key) {
+        if (root == -1) {
+            return sjtu::vector<valueType>();
+        }
+        sjtu::vector<valueType> ret;
         static Block<keyType, valueType> cur;
         cur.isLeaf = false;
         int pos = root;
         while (true) {
-            rdall(pos, cur);
+            ReadAll(pos, cur);
             if (cur.isLeaf) {
                 break;
             }
@@ -580,10 +709,9 @@ public:
             int l = 0, r = cur.siz;
             while (l < r) {
                 int mid = (l + r) >> 1;
-                if (cur.ele[mid].str >= key) {
+                if (!(cur.ele[mid].str < key)) {
                     r = mid;
-                }
-                else {
+                } else {
                     l = mid + 1;
                 }
             }
@@ -594,18 +722,16 @@ public:
         int l = 0, r = cur.siz;
         while (l < r) {
             int mid = (l + r) >> 1;
-            if (cur.ele[mid].str >= key) {
+            if (!(cur.ele[mid].str < key)) {
                 r = mid;
-            }
-            else {
+            } else {
                 l = mid + 1;
             }
         }
         if (l > 0) --l;
         // l 为第一个可能值
         if (l < cur.siz && key < cur.ele[l].str) {
-            cout << "null\n";
-            return;
+            return sjtu::vector<valueType>();
         }
         bool flag = false, flag2 = false;
         while (true) {
@@ -616,79 +742,24 @@ public:
                 }
                 if (key == cur.ele[i].str) {
                     flag2 = true;
-                    cout << cur.ele[i].val << " ";
+                    ret.push_back(cur.ele[i].val);
                 }
             }
             if (flag) break;
             pos = cur.nxt;
             if (pos == -1) break;
-            rdfirst(pos, cur);
+            ReadFirst(pos, cur);
             l = 0;
         }
         if (flag2) {
-            cout << "\n";
-        }
-        else {
-            cout << "null\n";
+            return ret;
+        } else {
+            return sjtu::vector<valueType>();
         }
     }
-
-    void realInsert(const Element<keyType, valueType> &ele) {
-        if (root == -1) {
-            root = nowsize = 0;
-            static Block<keyType, valueType> cur;
-            cur.siz = 1;
-            cur.ele[0] = ele;
-            cur.isLeaf = true;
-            cur.nxt = -1;
-            wtfirst(nowsize, cur);
-            return;
-        }
-        Block<keyType, valueType> cur;
-        rdall(root, cur);
-        InternalInsert(cur, root, ele);
-    }
-
-    void realDelete(const Element<keyType, valueType> &ele) {
-        if (root == -1) return;
-        static Block<keyType, valueType> cur;
-        rdall(root, cur);
-        InternalDelete(cur, root, ele);
-    }
-
-    void findall() {
-        int pos = root;
-        static Block<keyType, valueType> cur;
-        cur.isLeaf = false;
-        while (cur.isLeaf == false) {
-            rdall(pos, cur);
-            pos = cur.chd[0];
-        }
-        while (pos != -1) {
-            std::cout << "new node, id = " << pos << std::endl;
-            rdall(pos, cur);
-            for (int i = 0; i < cur.siz; ++i) {
-                std::cout << cur.ele[i].str << ' ' << cur.ele[i].val << std::endl;
-            }
-            pos = cur.nxt;
-        }
-        // 现在遍历整个树结构
-        cout << "root = " << root << endl;
-        cout << "nowsize = " << nowsize << endl;
-        for (int i = 0; i <= nowsize; ++i) {
-            cout << "point:" << i << endl;
-            rdall(i, cur);
-            cout << "siz" << cur.siz << endl;
-            for (int j = 0; j < cur.siz; ++j) {
-                cout << cur.ele[j].str << ' ' << cur.ele[j].val << endl;
-            }
-            if (cur.isLeaf) continue;
-            for (int j = 0; j <= cur.siz; ++j) {
-                cout << cur.chd[j] << ' ';
-            }
-            cout << endl;
-        }
+    void clear() {
+        nowsize = root = -1;
     }
 };
 
-#endif // BPlus_TREE
+#endif //TOY_12306_BPlus_TREE
