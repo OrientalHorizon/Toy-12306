@@ -6,6 +6,7 @@
 #include "TokenScanner.h"
 #include "BPT.h"
 #include "TrainSystem.h"
+#include "TicketSystem.h"
 
 using std::cin;
 using std::cout;
@@ -13,6 +14,7 @@ using std::endl;
 
 UserSystem userSystem;
 TrainSystem trainSystem;
+TicketSystem ticketSystem;
 
 signed main() {
 //    freopen("1.in", "r", stdin);
@@ -253,66 +255,145 @@ signed main() {
             }
             trainSystem.QueryTrain(trainID, date);
         }
-//        else if (cmd == "query_ticket") {
-//            std::string tmp, date, from, to, _type;
-//            ss >> tmp >> date >> from >> to >> _type;
-//            trainSystem.QueryTicket(date, from, to, _type);
-//        }
-//        else if (cmd == "query_transfer") {
-//            std::string tmp, date, from, to;
-//            ss >> tmp >> date >> from >> to;
-//            trainSystem.QueryTransfer(date, from, to);
-//        }
-//        else if (cmd == "buy_ticket") {
-//            std::string tmp, cur_username, trainID, date, from, to;
-//            int num;
-//            char _type;
-//            for (int unused = 0; unused < 6; ++unused) {
-//                ss >> tmp;
-//                switch (tmp[1]) {
-//                    case 'c': {
-//                        ss >> cur_username;
-//                        break;
-//                    }
-//                    case 'i': {
-//                        ss >> trainID;
-//                        break;
-//                    }
-//                    case 'd': {
-//                        ss >> date;
-//                        break;
-//                    }
-//                    case 'n': {
-//                        ss >> num;
-//                        break;
-//                    }
-//                    case 'f': {
-//                        ss >> from;
-//                        break;
-//                    }
-//                    case 't': {
-//                        ss >> to;
-//                        break;
-//                    }
-//                    case 'y': {
-//                        ss >> _type;
-//                        break;
-//                    }
-//                }
-//            }
-//            trainSystem.BuyTicket(cur_username, trainID, date, num, from, to, _type);
-//        }
-//        else if (cmd == "query_order") {
-//            std::string tmp, cur_username;
-//            ss >> tmp >> cur_username;
-//            trainSystem.QueryOrder(cur_username);
-//        }
-//        else if (cmd == "refund_ticket") {
-//            std::string tmp, cur_username;
-//            int num;
-//            ss >> tmp >> cur_username >> num;
-//            trainSystem.RefundTicket(cur_username, num);
-//        }
+        else if (cmd == "query_ticket") {
+            std::string tmp, date, from, to;
+            bool _type = false; // time
+            while (ss >> tmp) {
+                switch (tmp[1]) {
+                    case 'd': {
+                        ss >> date;
+                        break;
+                    }
+                    case 's': {
+                        ss >> from;
+                        break;
+                    }
+                    case 't': {
+                        ss >> to;
+                        break;
+                    }
+                    case 'y': {
+                        ss >> tmp;
+                        if (tmp == "time") {
+                            _type = false;
+                        }
+                        else if (tmp == "cost") {
+                            _type = true;
+                        }
+                        else {
+                            throw sjtu::exception("", "Invalid query type");
+                        }
+                        break;
+                    }
+                }
+            }
+            ticketSystem.QueryTicket(date, from, to, _type);
+        }
+        else if (cmd == "query_ticket") {
+            std::string tmp, date, from, to;
+            bool _type = false; // time
+            while (ss >> tmp) {
+                switch (tmp[1]) {
+                    case 'd': {
+                        ss >> date;
+                        break;
+                    }
+                    case 's': {
+                        ss >> from;
+                        break;
+                    }
+                    case 't': {
+                        ss >> to;
+                        break;
+                    }
+                    case 'y': {
+                        ss >> tmp;
+                        if (tmp == "time") {
+                            _type = false;
+                        }
+                        else if (tmp == "cost") {
+                            _type = true;
+                        }
+                        else {
+                            throw sjtu::exception("", "Invalid query type");
+                        }
+                        break;
+                    }
+                }
+            }
+            ticketSystem.QueryTransfer(date, from, to, _type);
+        }
+        else if (cmd == "buy_ticket") {
+            std::string tmp, username, trainID, date, from, to;
+            int num; bool que = false;
+            while (ss >> tmp) {
+                switch (tmp[1]) {
+                    case 'u': {
+                        ss >> username;
+                        break;
+                    }
+                    case 'i': {
+                        ss >> trainID;
+                        break;
+                    }
+                    case 'd': {
+                        ss >> date;
+                        break;
+                    }
+                    case 'n': {
+                        ss >> num;
+                        break;
+                    }
+                    case 'f': {
+                        ss >> from;
+                        break;
+                    }
+                    case 't': {
+                        ss >> to;
+                        break;
+                    }
+                    case 'q': {
+                        ss >> tmp;
+                        if (tmp == "true") {
+                            que = true;
+                        }
+                        else if (tmp == "false") {
+                            que = false;
+                        }
+                        else {
+                            throw sjtu::exception("", "Invalid query type!");
+                        }
+                        break;
+                    }
+                }
+            }
+            ticketSystem.BuyTicket(username, trainID, date, from, to, num, que);
+        }
+        else if (cmd == "query_order") {
+            std::string tmp, username;
+            ss >> tmp >> username;
+            ticketSystem.QueryOrder(username);
+        }
+        else if (cmd == "refund_ticket") {
+            std::string tmp, username;
+            int num;
+            while (ss >> tmp) {
+                switch (tmp[1]) {
+                    case 'u': {
+                        ss >> username;
+                        break;
+                    }
+                    case 'n': {
+                        ss >> num;
+                        break;
+                    }
+                }
+            }
+            ticketSystem.RefundTicket(username, num);
+        }
+        else {
+            throw sjtu::exception("", "Invalid command!");
+        }
     }
     return 0;
 }

@@ -18,6 +18,8 @@ struct User {
 };
 
 class UserSystem {
+    friend class TrainSystem;
+    friend class TicketSystem;
 private:
     int n; // number of users
     BPlusTree<MyID, int> userIndex;
@@ -79,7 +81,7 @@ public:
         }
         if (cur.password == pwd) {
             cout << "0" << endl;
-            loginStack[cur_id] = cur.priv;
+            loginStack[cur_id] = tmp_bool;
             return true;
         }
         else {
@@ -164,7 +166,7 @@ public:
             cur.name = name;
             cur.mailAddr = mailAddr;
             cur.priv = 10;
-            userIndex.realInsert(std::pair<MyID, int>(cur_id, ++n));
+            userIndex.realInsert(std::make_pair(cur_id, ++n));
             _file.seekp(4 + n * sizeof(User));
             _file.write(reinterpret_cast<const char *>(&cur), sizeof(cur));
             cout << "0" << endl;
@@ -197,7 +199,7 @@ public:
         cur.name = name;
         cur.mailAddr = mailAddr;
         cur.priv = priv;
-        userIndex.realInsert(std::pair<MyID, int>(cur_id, ++n));
+        userIndex.realInsert(std::make_pair(cur_id, ++n));
         _file.seekp(4 + n * sizeof(User));
         _file.write(reinterpret_cast<const char *>(&cur), sizeof(cur));
         cout << "0" << endl;

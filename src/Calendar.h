@@ -10,6 +10,7 @@
 const int days[] = {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365};
 
 class Date {
+    friend class DateTime;
 private:
     int date;
 public:
@@ -82,6 +83,7 @@ public:
     }
 };
 class Time {
+    friend class DateTime;
 private:
     int delta_day = 0, _time;
 public:
@@ -106,6 +108,11 @@ public:
         str.push_back((p.second / 10) + '0');
         str.push_back((p.second % 10) + '0');
         return str;
+    }
+    Time EraseDay() {
+        Time tmp(*this);
+        tmp.delta_day = 0;
+        return tmp;
     }
     inline bool operator==(const Time &y) const {
         return _time == y._time;
@@ -183,6 +190,7 @@ public:
         _time = hour * 60 + minute;
     }
     DateTime(int month, int day, int hour, int minute) : date(days[month - 1] + day), _time(hour * 60 + minute) {}
+    DateTime(const Date &d, const Time &t) : date(d.date + t.GetDay()), _time(t._time) {}
     inline bool operator==(const DateTime &y) const {
         return date == y.date && _time == y._time;
     }
@@ -226,7 +234,7 @@ public:
         return (date - y.date) * 1440 + (_time - y._time);
     }
     std::pair<int, int> GetDate() const {
-        int month = upper_bound(days, 0, 12, date);
+        int month = sjtu::upper_bound(days, 0, 12, date);
         int day = date - days[month - 1];
         return std::make_pair(month, day);
     }

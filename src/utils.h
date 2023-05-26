@@ -19,23 +19,61 @@
 #include "vector.h"
 #include "exceptions.h"
 
-template<class T>
-int lower_bound(const T *arr, int l, int r, T x) {
-    while (l < r) {
-        int mid = (l + r) >> 1;
-        if (arr[mid] < x) l = mid + 1;
-        else r = mid;
+namespace sjtu {
+    template<class T>
+    int lower_bound(const T *arr, int l, int r, T x) {
+        while (l < r) {
+            int mid = (l + r) >> 1;
+            if (arr[mid] < x) l = mid + 1;
+            else r = mid;
+        }
+        return l;
     }
-    return l;
-}
-template<class T>
-int upper_bound(const T *arr, int l, int r, T x) {
-    while (l < r) {
-        int mid = (l + r) >> 1;
-        if (arr[mid] <= x) l = mid + 1;
-        else r = mid;
+
+    template<class T>
+    int upper_bound(const T *arr, int l, int r, T x) {
+        while (l < r) {
+            int mid = (l + r) >> 1;
+            if (arr[mid] <= x) l = mid + 1;
+            else r = mid;
+        }
+        return l;
     }
-    return l;
+
+    template<class T, class Compare = std::less<T>>
+    void MergeSort(vector<T> &vec, int l, int r, T *arr) {
+        if (l == r) {
+            return;
+        }
+        int mid = (l + r) >> 1;
+        MergeSort(vec, l, mid, arr);
+        MergeSort(vec, mid + 1, r, arr);
+        int i = l, j = mid + 1, k = l;
+        while (i <= mid && j <= r) {
+            if (Compare{}(vec[i], vec[j])) {
+                arr[k++] = vec[i++];
+            }
+            else {
+                arr[k++] = vec[j++];
+            }
+        }
+        while (i <= mid) {
+            arr[k++] = vec[i++];
+            // ans += (long long)(mid - i + 1);
+        }
+        while (j <= r) {
+            arr[k++] = vec[j++];
+        }
+        for (int i = l; i <= r; ++i) {
+            vec[i] = arr[i];
+        }
+    }
+    template<class T>
+    void sort(vector<T> &vec) {
+        T *arr = new T[vec.size()];
+        MergeSort<T>(vec, 0, vec.size() - 1, arr);
+        delete[] arr;
+    }
 }
 
 struct MyID {

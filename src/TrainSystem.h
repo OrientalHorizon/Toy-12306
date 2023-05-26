@@ -12,21 +12,22 @@
 struct Train {
     MyID id;
     char released = 0;
-    int stationNum, seatNum[94][100], prices[100];
+    Date saleDate[2];
+    int stationNum, seatNum[94][100], prices[100]; // prices 改成前缀和
     MyString stations[100];
     Time departTime[100], arriveTime[100];
-    Date saleDate[2];
     char type; // 'G' 'D' 'Z' 'T' 'K' 'C'
     Train() = default;
 };
 
 class TrainSystem {
+    friend class TicketSystem;
 private:
     int n; // number of trains
     BPlusTree<MyID, int> trainIndex;
     std::fstream _file;
     const std::string _filename = "train.dat";
-    BPlusTree<MyString, std::pair<int, int> > stationIndex;
+    BPlusTree<MyString, std::pair<int, int>> stationIndex;
 
 public:
     TrainSystem() : trainIndex("TrainIndex"), stationIndex("StationIndex") {
@@ -61,6 +62,28 @@ public:
         _file.read(reinterpret_cast<char *>(&cur), sizeof(cur));
         return ret[0];
     }
+    int Released(const MyID &id) {
+        sjtu::vector<int> ret = trainIndex.Find(id);
+        if (ret.empty()) return -1;
+        if (ret.size() > 1) throw sjtu::exception("exception", "TrainSystem::Exists: ret.size() > 1");
+        _file.seekg(4 + ret[0] * sizeof(Train) + sizeof(MyID));
+        char tmp;
+        _file.read(reinterpret_cast<char *>(&tmp), sizeof(tmp));
+        if (!tmp) return -1;
+        return ret[0];
+    }
+    void Query(int pos, Train &cur) {
+        _file.seekg(4 + pos * sizeof(Train));
+        _file.read(reinterpret_cast<char *>(&cur), sizeof(cur));
+    }
+    void QueryDate(int pos, Train &cur) {
+        _file.seekg(4 + pos * sizeof(Train) + sizeof(MyID) + sizeof(char));
+        _file.read(reinterpret_cast<char *>(&cur.saleDate), sizeof(cur.saleDate));
+    }
+    void Modify(int pos, Train &cur) {
+        _file.seekp(4 + pos * sizeof(Train));
+        _file.write(reinterpret_cast<const char *>(&cur), sizeof(cur));
+    }
     bool AddTrain(const std::string &ID, const int stationNum, const int seatNum, const std::string &stations, const std::string &prices, const std::string &startTime,
                   const std::string &travelTimes, const std::string &stopoverTimes, const std::string &saleDate, const char _type) {
         MyID cur_id(ID);
@@ -81,10 +104,10 @@ public:
         }
         ss.clear();
         ss << prices;
-        for (int i = 0; i < stationNum - 1; ++i) {
+        for (int i = 1; i < stationNum; ++i) {
             std::string pri;
             getline(ss, pri, '|');
-            cur.prices[i] = std::stoi(pri);
+            cur.prices[i] = std::stoi(pri) + cur.prices[i - 1];
         }
         ss.clear();
         Time st_tim(startTime);
@@ -127,7 +150,7 @@ public:
                 cur.seatNum[i][j] = seatNum;
             }
         }
-        trainIndex.realInsert(std::pair<MyID, int>(cur_id, ++n));
+        trainIndex.realInsert(std::make_pair(cur_id, ++n));
         _file.seekp(4 + n * sizeof(Train));
         _file.write(reinterpret_cast<const char *>(&cur), sizeof(cur));
         cout << "0" << endl;
@@ -145,7 +168,7 @@ public:
             cout << "-1" << endl;
             return false;
         }
-        trainIndex.realDelete(std::pair<MyID, int>(cur_id, tmp_int));
+        trainIndex.realDelete(std::make_pair(cur_id, tmp_int));
         cout << "0" << endl;
         return true;
     }
@@ -153,7 +176,7 @@ public:
         MyID cur_id(ID);
         Train cur;
         int tmp_int = Exists(cur_id, cur);
-        if (tmp_int == -1) {
+        if (tmp_int == -1 || cur.released) {
             cout << "-1" << endl;
             return false;
         }
@@ -173,11 +196,6 @@ public:
         if (tmp_int == -1) {
             cout << "-1" << endl;
             return false;
-        }
-        int sum_pri[100];
-        sum_pri[0] = 0;
-        for (int i = 1; i < cur.stationNum; ++i) {
-            sum_pri[i] = sum_pri[i - 1] + cur.prices[i - 1];
         }
         Date cur_date = Date(date);
         int del_date = cur_date - cur.saleDate[0];
@@ -201,7 +219,7 @@ public:
                 cout << tmp_date.ToString() << " ";
                 cout << cur.departTime[i].ToString() << " ";
             }
-            cout << sum_pri[i] << " ";
+            cout << cur.prices[i] << " ";
             if (i == cur.stationNum - 1) {
                 cout << "x" << endl;
             }
