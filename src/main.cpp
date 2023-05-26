@@ -28,8 +28,8 @@ signed main() {
     system("rm -rf OrderIndex");
     system("rm -rf StationIndex");
     system("rm -rf QueueIndex");
-    freopen("1.in", "r", stdin);
-//    freopen("1-1.out", "w", stdout);
+    freopen("3-1.in", "r", stdin);
+    freopen("3-2.out", "w", stdout);
 #endif
     std::string line;
     std::string cmd;
@@ -334,7 +334,7 @@ signed main() {
                     }
                 }
             }
-            ticketSystem.QueryTransfer(date, from, to, _type);
+            ticketSystem.QueryTransfer(date, from, to, _type, time_stamp);
         }
         else if (cmd == "buy_ticket") {
             std::string tmp, username, trainID, date, from, to;

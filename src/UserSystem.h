@@ -148,6 +148,10 @@ public:
             cout << "-1" << endl;
             return false;
         }
+        if (cur_user.priv <= priv) {
+            cout << "-1" << endl;
+            return false;
+        }
         if (pwd != "") cur.password = pwd;
         if (name != "") cur.name = name;
         if (mailAddr != "") cur.mailAddr = mailAddr;

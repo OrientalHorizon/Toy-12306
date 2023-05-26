@@ -339,31 +339,31 @@ public:
         if (_type) {
             // cost
             if (price != cur_price) {
-                return price < cur_price;
+                return cur_price < price;
             }
             if (_tim != cur_tim) {
-                return _tim < cur_tim;
+                return cur_tim < _tim;
             }
             if (!(id_1 == cur_id_1)) {
-                return id_1 < cur_id_1;
+                return cur_id_1 < id_1;
             }
-            return id_2 < cur_id_2;
+            return cur_id_2 < id_2;
         }
         else {
             // time
             if (_tim != cur_tim) {
-                return _tim < cur_tim;
+                return cur_tim < _tim;
             }
             if (price != cur_price) {
-                return price < cur_price;
+                return cur_price < price;
             }
             if (!(id_1 == cur_id_1)) {
-                return id_1 < cur_id_1;
+                return cur_id_1 < id_1;
             }
-            return id_2 < cur_id_2;
+            return cur_id_2 < id_2;
         }
     }
-    bool QueryTransfer(const std::string &date, const std::string &from, const std::string &to, bool _type) {
+    bool QueryTransfer(const std::string &date, const std::string &from, const std::string &to, bool _type, const std::string &time_stamp) {
         // _type: true, cost; false, time
         // 方式：from 往后扫，to 往前扫；找到相同的车站，然后判断时间是否合适
         Date _date(date);
@@ -376,6 +376,7 @@ public:
         int ans[2] = {-1, -1}; // 前后车次
         std::pair<int, int> stationID[2];
         Date realDate[2];
+
         // cmp_ans: 比较用，ans: 最优解
         for (size_t i = 0; i < vec[0].size(); ++i) {
             static Train cur_1;
@@ -386,6 +387,9 @@ public:
                 continue;
             }
             for (size_t j = 0; j < vec[1].size(); ++j) {
+                if (vec[0][i].first == vec[1][j].first) {
+                    continue;
+                }
                 static Train cur_2;
                 trainSystem.Query(vec[1][j].first, cur_2);
 
@@ -396,6 +400,10 @@ public:
                             continue;
                         }
                         // now check whether time is available
+//                        if (time_stamp == "[38948]") {
+//                            cout << "fuck" << endl;
+//                            cout << cur_1.stations[k1] << " " << cur_2.stations[k2] << endl;
+//                        }
                         Date l1 = _date + (cur_1.arriveTime[k1].GetDay() - cur_1.departTime[vec[0][i].second].GetDay());
                         Time l2 = cur_1.arriveTime[k1].EraseDay();
                         DateTime l3(l1, l2); // 第二趟车必须不早于这个时间发车
@@ -435,8 +443,8 @@ public:
                             id_1 = cur_1.id;
                             id_2 = cur_2.id;
                             ans[0] = vec[0][i].first, ans[1] = vec[1][j].first;
-                            stationID[0] = std::make_pair(k1, vec[0][i].second);
-                            stationID[1] = std::make_pair(vec[1][j].second, k2);
+                            stationID[0] = std::make_pair(vec[0][i].second, k1);
+                            stationID[1] = std::make_pair(k2, vec[1][j].second);
                             realDate[0] = _date - cur_1.departTime[vec[0][i].second].GetDay();
                             realDate[1] = fuckRealDate;
                         }
@@ -444,7 +452,7 @@ public:
                 }
             }
         }
-        if (ans[0] == -1 || ans[1] == -1) {
+        if (price == 2147483646) {
             cout << "0" << endl;
             return false;
         }
