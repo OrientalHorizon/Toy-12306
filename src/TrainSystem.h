@@ -144,7 +144,7 @@ public:
             getline(ss, dat, '|');
             cur.saleDate[i] = Date(dat);
         }
-        int sale_duration = cur.saleDate[1] - cur.saleDate[0];
+        int sale_duration = cur.saleDate[1] - cur.saleDate[0] + 1;
         for (int i = 0; i < sale_duration; ++i) {
             for (int j = 0; j < stationNum - 1; ++j) {
                 cur.seatNum[i][j] = seatNum;

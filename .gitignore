@@ -12,3 +12,4 @@ _deps
 .git/
 .idea/
 cmake-build-debug/
+bin/

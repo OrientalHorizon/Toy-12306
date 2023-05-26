@@ -29,8 +29,8 @@ signed main() {
     system("rm -rf StationIndex");
     system("rm -rf QueueIndex");
 #endif
-//    freopen("1.in", "r", stdin);
-//    freopen("1-1.out", "w", stdout);
+    freopen("2.in", "r", stdin);
+    freopen("2-1.out", "w", stdout);
     std::string line;
     std::string cmd;
     bool is_first = true;

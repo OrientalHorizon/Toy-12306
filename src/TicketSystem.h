@@ -80,7 +80,7 @@ public:
         Date _date(date);
         // 检查始发日期
         int del_date = _date - cur.saleDate[0] - cur.departTime[stationID[0]].GetDay();
-        if (del_date < 0 || del_date >= cur.saleDate[1] - cur.saleDate[0]) {
+        if (del_date < 0 || del_date >= cur.saleDate[1] - cur.saleDate[0] + 1) {
             cout << "-1" << endl;
             return false;
         }
@@ -148,7 +148,7 @@ public:
             return true;
         }
         cout << orders.size() << endl;
-        for (size_t i = orders.size() - 1; i >= 0; --i) {
+        for (int i = orders.size() - 1; i >= 0; --i) {
             _file.seekg(4 + orders[i] * sizeof(Order));
             static Order tmp;
             _file.read(reinterpret_cast<char *>(&tmp), sizeof(tmp));
@@ -235,6 +235,7 @@ public:
             queueIndex.realDelete(std::make_pair(std::make_pair(tmp.train_num, tmp.del_date), ques[i]));
         }
         trainSystem.Modify(cur.train_num, cur_train);
+        cout << "0" << endl;
         return true;
     }
     bool QueryTicket(const std::string &date, const std::string &from, const std::string &to, bool _type) {

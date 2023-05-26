@@ -23,7 +23,7 @@ public:
     }
     Date(int month, int day) : date(days[month - 1] + day) {}
     std::pair<int, int> GetDate() const {
-        int month = sjtu::upper_bound(days, 0, 12, date);
+        int month = sjtu::lower_bound(days, 0, 12, date);
         int day = date - days[month - 1];
         return std::make_pair(month, day);
     }
@@ -234,7 +234,7 @@ public:
         return (date - y.date) * 1440 + (_time - y._time);
     }
     std::pair<int, int> GetDate() const {
-        int month = sjtu::upper_bound(days, 0, 12, date);
+        int month = sjtu::lower_bound(days, 0, 12, date);
         int day = date - days[month - 1];
         return std::make_pair(month, day);
     }
