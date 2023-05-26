@@ -28,20 +28,21 @@ signed main() {
     system("rm -rf OrderIndex");
     system("rm -rf StationIndex");
     system("rm -rf QueueIndex");
-//    freopen("1.in", "r", stdin);
+    freopen("1.in", "r", stdin);
 //    freopen("1-1.out", "w", stdout);
 #endif
     std::string line;
     std::string cmd;
+    std::string time_stamp;
     bool is_first = true;
     while (getline(std::cin, line)) {
         std::stringstream ss;
         ss.clear();
         ss << line;
 //        cout << "6" << ss.str() << endl;
-        ss >> cmd;
+        ss >> time_stamp;
         // Time stamp
-        cout << cmd << " ";
+        cout << time_stamp << " ";
         ss >> cmd;
         if (cmd == "exit") {
             cout << "bye" << endl;
@@ -379,7 +380,7 @@ signed main() {
                     }
                 }
             }
-            ticketSystem.BuyTicket(username, trainID, date, from, to, num, que);
+            ticketSystem.BuyTicket(username, trainID, date, from, to, num, que, time_stamp);
         }
         else if (cmd == "query_order") {
             std::string tmp, username;
@@ -401,7 +402,7 @@ signed main() {
                     }
                 }
             }
-            ticketSystem.RefundTicket(username, num);
+            ticketSystem.RefundTicket(username, num, time_stamp);
         }
         else {
             throw sjtu::exception("", "Invalid command!");

@@ -58,7 +58,7 @@ public:
         _file.write(reinterpret_cast<const char *>(&n), sizeof(n));
         _file.close();
     }
-    bool BuyTicket(const std::string &username, const std::string &ID, const std::string &date, const std::string &from, const std::string &to, const int num, const bool que) {
+    bool BuyTicket(const std::string &username, const std::string &ID, const std::string &date, const std::string &from, const std::string &to, const int num, const bool que, const std::string &time_stamp) {
         MyID userID(username), trainID(ID);
         int user_num = userSystem.Logged(userID);
         if (user_num == -1) {
@@ -90,7 +90,14 @@ public:
         }
         // 查看有没有余票
         bool enough_ticket = true;
+//        if (time_stamp == (std::string)"[126044]") {
+//            cout << "fuck" << endl;
+//        }
         for (int i = stationID[0]; i < stationID[1]; ++i) {
+            // if (ID == "LeavesofGrass") {
+                // cout << cur.seatNum[del_date][i] << endl;
+                // cout << "num = " << num << endl;
+            // }
             if (cur.seatNum[del_date][i] < num) {
                 enough_ticket = false;
                 break;
@@ -131,8 +138,10 @@ public:
             return true;
         }
         // 没有余票，愿意候补购票
+        // cout << "fuck" << endl;
         tmp.status = 2;
-        queueIndex.realInsert(std::make_pair(std::make_pair(train_num, del_date), ++n));
+        ++n;
+        queueIndex.realInsert(std::make_pair(std::make_pair(train_num, del_date), n));
         orderIndex.realInsert(std::make_pair(user_num, n));
         _file.seekp(4 + n * sizeof(Order));
         _file.write(reinterpret_cast<const char *>(&tmp), sizeof(tmp));
@@ -179,7 +188,7 @@ public:
         }
         return true;
     }
-    bool RefundTicket(const std::string &username, const int _num) {
+    bool RefundTicket(const std::string &username, const int _num, const std::string &time_stamp) {
         MyID userID(username);
         int user_num = userSystem.Logged(userID);
         if (user_num == -1) {
@@ -199,21 +208,27 @@ public:
             cout << "-1" << endl;
             return false;
         }
-        cur.status = -1;
         if (cur.status == 2) {
             // 候补购票，不涉及具体车次的余票变化
+            cur.status = -1;
             queueIndex.realDelete(std::make_pair(std::make_pair(cur.train_num, cur.del_date), orders[real_num]));
             _file.seekp(4 + orders[real_num] * sizeof(Order));
             _file.write(reinterpret_cast<const char *>(&cur.status), sizeof(cur.status));
             cout << "0" << endl;
             return true;
         }
+        cur.status = -1;
         // 退票
         static Train cur_train;
         trainSystem.Query(cur.train_num, cur_train);
         for (int i = cur.stationID[0]; i < cur.stationID[1]; ++i) {
             cur_train.seatNum[cur.del_date][i] += cur.num;
         }
+//        cout << cur_train.stationNum << endl;
+//        for (int i = 0; i < 100; ++i) {
+//            cout << cur_train.seatNum[cur.del_date][i] << " ";
+//        }
+//        cout << endl;
         // 遍历候补队列
         sjtu::vector<int> ques = queueIndex.Find(std::make_pair(cur.train_num, cur.del_date));
         for (size_t i = 0; i < ques.size(); ++i) {
@@ -238,6 +253,10 @@ public:
             _file.write(reinterpret_cast<const char *>(&tmp), sizeof(tmp.status));
             queueIndex.realDelete(std::make_pair(std::make_pair(tmp.train_num, tmp.del_date), ques[i]));
         }
+//        for (int i = 0; i < 100; ++i) {
+//            cout << cur_train.seatNum[cur.del_date][i] << " ";
+//        }
+//        cout << endl;
         trainSystem.Modify(cur.train_num, cur_train);
         _file.seekp(4 + orders[real_num] * sizeof(Order));
         _file.write(reinterpret_cast<char *>(&cur.status), sizeof(cur.status));
