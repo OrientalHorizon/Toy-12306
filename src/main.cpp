@@ -284,7 +284,7 @@ signed main() {
                         ss >> to;
                         break;
                     }
-                    case 'y': {
+                    case 'p': {
                         ss >> tmp;
                         if (tmp == "time") {
                             _type = false;
@@ -318,7 +318,7 @@ signed main() {
                         ss >> to;
                         break;
                     }
-                    case 'y': {
+                    case 'p': {
                         ss >> tmp;
                         if (tmp == "time") {
                             _type = false;

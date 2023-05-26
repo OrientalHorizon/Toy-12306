@@ -72,10 +72,14 @@ public:
         }
         Train cur;
         trainSystem.Exists(trainID, cur);
-        int stationID[2];
+        int stationID[2] = {-1, -1};
         for (int i = 0; i < cur.stationNum; ++i) {
             if (cur.stations[i] == from) stationID[0] = i;
             if (cur.stations[i] == to) stationID[1] = i;
+        }
+        if (stationID[0] == -1 || stationID[1] == -1) {
+            cout << "-1" << endl;
+            return false;
         }
         Date _date(date);
         // 检查始发日期
@@ -291,6 +295,11 @@ public:
                 tmpVec.push_back(std::make_pair(std::make_pair(_tim[i],trains[i].id), i));
             }
         }
+//        if (_type) {
+//            for (size_t i = 0; i < tmpVec.size(); ++i) {
+//                cout << tmpVec[i].first.first << " " << tmpVec[i].first.second << " " << tmpVec[i].second << endl;
+//            }
+//        }
         sjtu::sort<std::pair<std::pair<int, MyID>, int>>(tmpVec);
         cout << tmpVec.size() << endl;
         for (size_t i = 0; i < tmpVec.size(); ++i) {
@@ -416,7 +425,7 @@ public:
                 }
             }
         }
-        if (ans[0] == -1) {
+        if (ans[0] == -1 || ans[1] == -1) {
             cout << "0" << endl;
             return false;
         }
