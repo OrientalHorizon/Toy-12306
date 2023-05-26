@@ -16,7 +16,7 @@ UserSystem userSystem;
 TrainSystem trainSystem;
 TicketSystem ticketSystem;
 #ifndef DEBUG
-#define DEBUG
+// #define DEBUG
 #endif
 signed main() {
 #ifdef DEBUG
@@ -28,9 +28,9 @@ signed main() {
     system("rm -rf OrderIndex");
     system("rm -rf StationIndex");
     system("rm -rf QueueIndex");
-#endif
     freopen("2.in", "r", stdin);
     freopen("2-1.out", "w", stdout);
+#endif
     std::string line;
     std::string cmd;
     bool is_first = true;
