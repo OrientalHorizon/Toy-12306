@@ -34,7 +34,7 @@ private:
     std::fstream _file;
     const std::string _filename = "ticket.dat";
 public:
-    TicketSystem() : orderIndex("OrderIndex") {
+    TicketSystem() : orderIndex("OrderIndex"), queueIndex("QueueIndex") {
         _file.open(_filename);
         if (!_file) {
             // 创建一个文件

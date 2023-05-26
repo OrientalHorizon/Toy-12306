@@ -15,8 +15,20 @@ using std::endl;
 UserSystem userSystem;
 TrainSystem trainSystem;
 TicketSystem ticketSystem;
-
+#ifndef DEBUG
+#define DEBUG
+#endif
 signed main() {
+#ifdef DEBUG
+    system("rm -rf user.dat");
+    system("rm -rf train.dat");
+    system("rm -rf ticket.dat");
+    system("rm -rf UserIndex");
+    system("rm -rf TrainIndex");
+    system("rm -rf OrderIndex");
+    system("rm -rf StationIndex");
+    system("rm -rf QueueIndex");
+#endif
 //    freopen("1.in", "r", stdin);
 //    freopen("1-1.out", "w", stdout);
     std::string line;
@@ -241,14 +253,14 @@ signed main() {
         else if (cmd == "query_train") {
             std::string tmp, trainID, date;
             for (int unused = 0; unused < 2; ++unused) {
-                cin >> tmp;
+                ss >> tmp;
                 switch (tmp[1]) {
                     case 'i': {
-                        cin >> trainID;
+                        ss >> trainID;
                         break;
                     }
                     case 'd': {
-                        cin >> date;
+                        ss >> date;
                         break;
                     }
                 }
