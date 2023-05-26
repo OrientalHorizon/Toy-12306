@@ -195,10 +195,10 @@ public:
             cout << "-1" << endl;
             return false;
         }
+        cur.status = -1;
         if (cur.status == 2) {
             // 候补购票，不涉及具体车次的余票变化
             queueIndex.realDelete(std::make_pair(std::make_pair(cur.train_num, cur.del_date), orders[real_num]));
-            cur.status = -1;
             _file.seekp(4 + orders[real_num] * sizeof(Order));
             _file.write(reinterpret_cast<const char *>(&cur.status), sizeof(cur.status));
             cout << "0" << endl;
@@ -235,6 +235,8 @@ public:
             queueIndex.realDelete(std::make_pair(std::make_pair(tmp.train_num, tmp.del_date), ques[i]));
         }
         trainSystem.Modify(cur.train_num, cur_train);
+        _file.seekp(4 + orders[real_num] * sizeof(Order));
+        _file.write(reinterpret_cast<char *>(&cur.status), sizeof(cur.status));
         cout << "0" << endl;
         return true;
     }
@@ -269,6 +271,10 @@ public:
             } else {
                 ++j;
             }
+        }
+        if (trains.empty()) {
+            cout << "0" << endl;
+            return false;
         }
         sjtu::vector<int> _tim;
         sjtu::vector<int> prices;
@@ -339,7 +345,7 @@ public:
                                                     trainSystem.stationIndex.Find(to)};
         int price = 2147483646, _tim = 2147483646;
         MyID id_1("~"), id_2("~");
-        int ans[2]; // 前后车次
+        int ans[2] = {-1, -1}; // 前后车次
         std::pair<int, int> stationID[2];
         Date realDate[2];
         // cmp_ans: 比较用，ans: 最优解
@@ -410,7 +416,7 @@ public:
                 }
             }
         }
-        if (id_1.s == "~") {
+        if (ans[0] == -1) {
             cout << "0" << endl;
             return false;
         }

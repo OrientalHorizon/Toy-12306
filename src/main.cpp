@@ -28,8 +28,8 @@ signed main() {
     system("rm -rf OrderIndex");
     system("rm -rf StationIndex");
     system("rm -rf QueueIndex");
-    freopen("2.in", "r", stdin);
-    freopen("2-1.out", "w", stdout);
+//    freopen("1.in", "r", stdin);
+//    freopen("1-1.out", "w", stdout);
 #endif
     std::string line;
     std::string cmd;
@@ -301,7 +301,7 @@ signed main() {
             }
             ticketSystem.QueryTicket(date, from, to, _type);
         }
-        else if (cmd == "query_ticket") {
+        else if (cmd == "query_transfer") {
             std::string tmp, date, from, to;
             bool _type = false; // time
             while (ss >> tmp) {

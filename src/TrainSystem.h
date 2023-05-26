@@ -199,6 +199,10 @@ public:
         }
         Date cur_date = Date(date);
         int del_date = cur_date - cur.saleDate[0];
+        if (del_date < 0 || del_date > cur.saleDate[1] - cur.saleDate[0]) {
+            cout << "-1" << endl;
+            return false;
+        }
         cout << cur_id << " " << cur.type << endl;
         for (int i = 0; i < cur.stationNum; ++i) {
             cout << cur.stations[i] << " ";
