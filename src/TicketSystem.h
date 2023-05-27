@@ -329,19 +329,19 @@ public:
         sjtu::sort(tmpVec);
         cout << tmpVec.size() << endl;
         // static Train tmp;
-        for (size_t i = 0; i < tmpVec.size(); ++i) {
-            int cur_id = tmpVec[i].second;
-            trainSystem.Query(trainNum[cur_id], tmp);
-            Date realDate = _date - tmp.departTime[stationID[cur_id].first].GetDay();
-            int del_date = realDate - tmp.saleDate[0];
-            int max_ticket = 2147483647;
-            for (size_t j = stationID[cur_id].first; j < stationID[cur_id].second; ++j) {
-                max_ticket = std::min(max_ticket, tmp.seatNum[del_date][j]);
-            }
-            DateTime departTime(realDate, tmp.departTime[stationID[cur_id].first]);
-            DateTime arriveTime(realDate, tmp.arriveTime[stationID[cur_id].second]);
-            cout << tmp.id << " " << from << " " << departTime.ToString() <<  " -> " << to << " " << arriveTime.ToString() << " " << prices[cur_id] << " " << max_ticket << endl;
-        }
+//        for (size_t i = 0; i < tmpVec.size(); ++i) {
+//            int cur_id = tmpVec[i].second;
+//            trainSystem.Query(trainNum[cur_id], tmp);
+//            Date realDate = _date - tmp.departTime[stationID[cur_id].first].GetDay();
+//            int del_date = realDate - tmp.saleDate[0];
+//            int max_ticket = 2147483647;
+//            for (size_t j = stationID[cur_id].first; j < stationID[cur_id].second; ++j) {
+//                max_ticket = std::min(max_ticket, tmp.seatNum[del_date][j]);
+//            }
+//            DateTime departTime(realDate, tmp.departTime[stationID[cur_id].first]);
+//            DateTime arriveTime(realDate, tmp.arriveTime[stationID[cur_id].second]);
+//            cout << tmp.id << " " << from << " " << departTime.ToString() <<  " -> " << to << " " << arriveTime.ToString() << " " << prices[cur_id] << " " << max_ticket << endl;
+//        }
         return true;
     }
     bool Compare(int price, int _tim, const MyID &id_1, const MyID &id_2, int cur_price, int cur_tim, const MyID &cur_id_1, const MyID &cur_id_2, bool _type) {
