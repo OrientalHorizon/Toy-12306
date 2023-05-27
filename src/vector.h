@@ -565,6 +565,18 @@ namespace sjtu
             delete Obj[Size - 1];
             --Size;
         }
+        void resize(size_t n) {
+            size_t m = 8;
+            while (m <= n) m <<= 1;
+            Capacity = m;
+            T** tmp = new T*[Capacity];
+            for (size_t i = 0; i < Size; ++i) {
+                tmp[i] = new T(*Obj[i]);
+                delete Obj[i];
+            }
+            std::swap(tmp, Obj);
+            delete[] tmp;
+        }
     };
 
 

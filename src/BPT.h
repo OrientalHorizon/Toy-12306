@@ -106,7 +106,7 @@ using std::endl;
 //    return !(a < b);
 //}
 
-const int MaxSize = 120, MinSize = 60;
+const int MaxSize = 80, MinSize = 40;
 template<class keyType, class valueType>
 struct Block {
     int isLeaf = 0; // 是否是叶结点

@@ -165,9 +165,9 @@ public:
             return true;
         }
         cout << orders.size() << endl;
+        static Order tmp;
         for (int i = orders.size() - 1; i >= 0; --i) {
             _file.seekg(4 + orders[i] * sizeof(Order));
-            static Order tmp;
             _file.read(reinterpret_cast<char *>(&tmp), sizeof(tmp));
             switch (tmp.status) {
                 case 1: {
@@ -235,8 +235,8 @@ public:
 //        cout << endl;
         // 遍历候补队列
         sjtu::vector<int> ques = queueIndex.Find(std::make_pair(cur.train_num, cur.del_date));
+        Order tmp;
         for (size_t i = 0; i < ques.size(); ++i) {
-            Order tmp;
             _file.seekg(4 + ques[i] * sizeof(Order));
             _file.read(reinterpret_cast<char *>(&tmp), 32);
             if (tmp.stationID[1] < cur.stationID[0] || tmp.stationID[0] > cur.stationID[1]) continue;
@@ -276,11 +276,11 @@ public:
         sjtu::vector<Train> trains;
         Date _date(date);
         size_t i = 0, j = 0;
+        static Train tmp;
         while (i < vec[0].size() && j < vec[1].size()) {
             if (vec[0][i].first == vec[1][j].first) {
                 if (vec[0][i].second < vec[1][j].second) {
                     int train_num = vec[0][i].first;
-                    static Train tmp;
                     trainSystem.Query(train_num, tmp);
                     // 还要读进来到达时间才能判断当天发车的情况
                     Date l = tmp.saleDate[0] + tmp.departTime[vec[0][i].second].GetDay(), r = tmp.saleDate[1] + tmp.departTime[vec[0][i].second].GetDay();
@@ -382,8 +382,9 @@ public:
         Date realDate[2];
 
         // cmp_ans: 比较用，ans: 最优解
+        static Train cur_1;
+        static Train cur_2;
         for (size_t i = 0; i < vec[0].size(); ++i) {
-            static Train cur_1;
             trainSystem.Query(vec[0][i].first, cur_1);
             // 在那天有车
             Date l = cur_1.saleDate[0] + cur_1.departTime[vec[0][i].second].GetDay(), r = cur_1.saleDate[1] + cur_1.departTime[vec[0][i].second].GetDay();
@@ -394,7 +395,6 @@ public:
                 if (vec[0][i].first == vec[1][j].first) {
                     continue;
                 }
-                static Train cur_2;
                 trainSystem.Query(vec[1][j].first, cur_2);
 
                 // Check common stations
@@ -462,8 +462,8 @@ public:
         }
 
         // TODO: Output
+        static Train cur;
         for (int j = 0; j < 2; ++j) {
-            static Train cur;
             trainSystem.Query(ans[j], cur);
             int total_price = cur.prices[stationID[j].second] - cur.prices[stationID[j].first], max_seat = 2147483646;
             int del_date = realDate[j] - cur.saleDate[0];
