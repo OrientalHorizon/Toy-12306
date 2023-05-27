@@ -77,7 +77,7 @@ public:
             if (cur.stations[i] == from) stationID[0] = i;
             if (cur.stations[i] == to) stationID[1] = i;
         }
-        if (stationID[0] == -1 || stationID[1] == -1) {
+        if (stationID[0] == -1 || stationID[1] == -1 || stationID[0] >= stationID[1]) {
             cout << "-1" << endl;
             return false;
         }
@@ -89,6 +89,10 @@ public:
             return false;
         }
         // 查看有没有余票
+        if (cur.totSeatNum < num) {
+            cout << "-1" << endl;
+            return false;
+        }
         bool enough_ticket = true;
 //        if (time_stamp == (std::string)"[126044]") {
 //            cout << "fuck" << endl;

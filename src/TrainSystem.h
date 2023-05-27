@@ -13,7 +13,7 @@ struct Train {
     MyID id;
     char released = 0;
     Date saleDate[2];
-    int stationNum, seatNum[94][100], prices[100]; // prices 改成前缀和
+    int stationNum, totSeatNum, seatNum[94][100], prices[100]; // prices 改成前缀和
     MyString stations[100];
     Time departTime[100], arriveTime[100];
     char type; // 'G' 'D' 'Z' 'T' 'K' 'C'
@@ -104,6 +104,7 @@ public:
         }
         ss.clear();
         ss << prices;
+        cur.prices[0] = 0;
         for (int i = 1; i < stationNum; ++i) {
             std::string pri;
             getline(ss, pri, '|');
@@ -145,6 +146,7 @@ public:
             cur.saleDate[i] = Date(dat);
         }
         int sale_duration = cur.saleDate[1] - cur.saleDate[0] + 1;
+        cur.totSeatNum = seatNum;
         for (int i = 0; i < sale_duration; ++i) {
             for (int j = 0; j < stationNum - 1; ++j) {
                 cur.seatNum[i][j] = seatNum;
