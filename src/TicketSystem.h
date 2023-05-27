@@ -320,11 +320,11 @@ public:
                 tmpVec.push_back(std::make_pair(std::make_pair(_tim[i], trainID[i]), i));
             }
         }
-        if (_type) {
-            for (size_t i = 0; i < tmpVec.size(); ++i) {
-                cout << tmpVec[i].first.first << " " << tmpVec[i].first.second << " " << tmpVec[i].second << endl;
-            }
-        }
+//        if (_type) {
+//            for (size_t i = 0; i < tmpVec.size(); ++i) {
+//                cout << tmpVec[i].first.first << " " << tmpVec[i].first.second << " " << tmpVec[i].second << endl;
+//            }
+//        }
         sjtu::sort(tmpVec);
         cout << tmpVec.size() << endl;
         // static Train tmp;
