@@ -28,7 +28,7 @@ private:
     BPlusTree<MyID, int> loginStack;
 
 public:
-    UserSystem() : userIndex("UserIndex") {
+    UserSystem() : userIndex("UserIndex"), loginStack("LoginStack") {
         _file.open(_filename);
         if (!_file) {
             // 创建一个文件
