@@ -14,3 +14,4 @@ _deps
 cmake-build-debug/
 bin/
 test/
+code

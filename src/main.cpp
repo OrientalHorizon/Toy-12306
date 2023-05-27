@@ -31,6 +31,8 @@ signed main() {
     freopen("3-1.in", "r", stdin);
     freopen("3-2.out", "w", stdout);
 #endif
+    // freopen("1.in", "r", stdin);
+
     std::string line;
     std::string cmd;
     std::string time_stamp;
@@ -52,43 +54,13 @@ signed main() {
             // TODO: clear
             // call all systems to clear data
             userSystem.clear();
+            trainSystem.clear();
+            ticketSystem.clear();
         }
         else if (cmd == "add_user") {
             std::string tmp, cur_username, username, password, name, mailAddr;
-            int privilege;
-            if (is_first) {
-                for (int unused = 0; unused < 6; ++unused) {
-                    ss >> tmp;
-                    switch (tmp[1]) {
-                        case 'u': {
-                            ss >> username;
-                            break;
-                        }
-                        case 'p': {
-                            ss >> password;
-                            break;
-                        }
-                        case 'n': {
-                            ss >> name;
-                            break;
-                        }
-                        case 'm': {
-                            ss >> mailAddr;
-                            break;
-                        }
-                        default: {
-                            ss >> tmp;
-                            break;
-                        }
-                    }
-                }
-                privilege = 10;
-                userSystem.AddUser("", username, password, name, mailAddr, privilege);
-                is_first = false;
-                continue;
-            }
-            for (int unused = 0; unused < 6; ++unused) {
-                ss >> tmp;
+            int privilege = -1;
+            while (ss >> tmp) {
                 switch (tmp[1]) {
                     case 'c': {
                         ss >> cur_username;
@@ -116,7 +88,7 @@ signed main() {
                     }
                 }
             }
-            userSystem.AddUser(cur_username, username, password, name, mailAddr, privilege);
+            userSystem.AddUser(cur_username, username, password, name, mailAddr, privilege, time_stamp);
         }
         else if (cmd == "login") {
             std::string tmp, username, password;

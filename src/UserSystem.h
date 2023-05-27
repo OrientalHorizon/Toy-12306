@@ -161,7 +161,7 @@ public:
         cout << cur.id << " " << cur.name << " " << cur.mailAddr << " " << cur.priv << endl;
         return true;
     }
-    bool AddUser(const std::string &curID, const std::string &ID, const std::string &pwd, const std::string &name, const std::string &mailAddr, const int priv) {
+    bool AddUser(const std::string &curID, const std::string &ID, const std::string &pwd, const std::string &name, const std::string &mailAddr, const int priv, const std::string &time_stamp) {
         MyID cur_id(ID);
         if (n == -1) {
             User cur;
@@ -175,6 +175,14 @@ public:
             _file.write(reinterpret_cast<const char *>(&cur), sizeof(cur));
             cout << "0" << endl;
             return true;
+        }
+        // cout << time_stamp << endl;
+//        if (time_stamp == "[6728]") {
+//            cout << curID << endl;
+//        }
+        if (priv == -1 || curID == "") {
+            cout << "-1" << endl;
+            return false;
         }
         MyID curuser_id(curID);
         static User cur_user, cur;

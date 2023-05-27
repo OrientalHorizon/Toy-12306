@@ -473,6 +473,12 @@ public:
         }
         return true;
     }
+    bool clear() {
+        n = 0;
+        queueIndex.clear();
+        orderIndex.clear();
+        return true;
+    }
 };
 
 
