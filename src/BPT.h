@@ -535,7 +535,7 @@ private:
 
 public:
     int root = -1;
-    // BPlusTree() = default;
+    BPlusTree() = default;
     explicit BPlusTree(const std::string &name) {
         _filename = name;
         _file.open(_filename);

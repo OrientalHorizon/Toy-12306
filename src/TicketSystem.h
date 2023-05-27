@@ -314,7 +314,7 @@ public:
             prices.push_back(tmp.prices[stationID[i].second] - tmp.prices[stationID[i].first]);
             _tim.push_back(tmp.arriveTime[stationID[i].second] - tmp.departTime[stationID[i].first]);
         }
-        std::vector<std::pair<std::pair<int, MyID>, int>> tmpVec;
+        std::vector<std::pair<std::pair<int, MyID>, int> > tmpVec;
         tmpVec.resize(trains.size());
         for (size_t i = 0; i < trains.size(); ++i) {
             if (_type) {
