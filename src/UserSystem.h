@@ -25,7 +25,7 @@ private:
     BPlusTree<MyID, int> userIndex;
     std::fstream _file;
     const std::string _filename = "user.dat";
-    sjtu::map<MyID, int> loginStack;
+    BPlusTree<MyID, int> loginStack;
 
 public:
     UserSystem() : userIndex("UserIndex") {
@@ -63,8 +63,10 @@ public:
         return ret[0];
     }
     int Logged(const MyID &id) {
-        if (loginStack.count(id)) return loginStack[id];
-        return -1;
+        sjtu::vector<int> vec = loginStack.Find(id);
+        if (vec.empty()) return -1;
+        if (vec.size() > 1) throw sjtu::exception("exception", "UserSystem::Logged: vec.size() > 1");
+        return vec[0];
     }
     bool Login(const std::string &ID, const std::string &pwd) {
         MyID cur_id(ID);
@@ -81,7 +83,7 @@ public:
         }
         if (cur.password == pwd) {
             cout << "0" << endl;
-            loginStack[cur_id] = tmp_bool;
+            loginStack.realInsert(std::make_pair(cur_id, tmp_bool));
             return true;
         }
         else {
@@ -101,8 +103,7 @@ public:
             cout << "-1" << endl;
             return false;
         }
-        sjtu::map<MyID, int>::iterator it = loginStack.find(cur_id);
-        loginStack.erase(it);
+        loginStack.realDelete(std::make_pair(cur_id, tmp_int));
         cout << "0" << endl;
         return true;
     }
