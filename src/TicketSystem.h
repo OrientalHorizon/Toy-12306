@@ -312,14 +312,14 @@ public:
             cout << "0" << endl;
             return false;
         }
-        sjtu::vector<std::pair<std::pair<int, MyID>, int> > tmpVec;
-        for (int i = 0; i < trainNum.size(); ++i) {
-            if (_type) {
-                tmpVec.push_back(std::make_pair(std::make_pair(prices[i], trainID[i]), i));
-            } else {
-                tmpVec.push_back(std::make_pair(std::make_pair(_tim[i], trainID[i]), i));
-            }
-        }
+//        sjtu::vector<std::pair<std::pair<int, MyID>, int> > tmpVec;
+//        for (int i = 0; i < trainNum.size(); ++i) {
+//            if (_type) {
+//                tmpVec.push_back(std::make_pair(std::make_pair(prices[i], trainID[i]), i));
+//            } else {
+//                tmpVec.push_back(std::make_pair(std::make_pair(_tim[i], trainID[i]), i));
+//            }
+//        }
 //        if (_type) {
 //            for (size_t i = 0; i < tmpVec.size(); ++i) {
 //                cout << tmpVec[i].first.first << " " << tmpVec[i].first.second << " " << tmpVec[i].second << endl;
