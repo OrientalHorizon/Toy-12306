@@ -315,7 +315,6 @@ public:
             _tim.push_back(tmp.arriveTime[stationID[i].second] - tmp.departTime[stationID[i].first]);
         }
         std::vector<std::pair<std::pair<int, MyID>, int> > tmpVec;
-        tmpVec.resize(trains.size());
         for (size_t i = 0; i < trains.size(); ++i) {
             if (_type) {
                 tmpVec.emplace_back(std::make_pair(prices[i],trains[i].id), i);
@@ -328,7 +327,7 @@ public:
 //                cout << tmpVec[i].first.first << " " << tmpVec[i].first.second << " " << tmpVec[i].second << endl;
 //            }
 //        }
-        std::sort(tmpVec.begin(), tmpVec.end());
+        std::sort(tmpVec.begin(), tmpVec.end(), std::less<std::pair<std::pair<int, MyID>, int> >());
         cout << tmpVec.size() << endl;
         for (size_t i = 0; i < tmpVec.size(); ++i) {
             int cur_id = tmpVec[i].second;
