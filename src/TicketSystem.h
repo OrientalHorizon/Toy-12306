@@ -296,8 +296,8 @@ public:
                     }
                     trainNum.push_back(train_num);
                     stationID.push_back(std::make_pair(vec[0][i].second, vec[1][j].second));
-                    prices.push_back(tmp.prices[stationID[i].second] - tmp.prices[stationID[i].first]);
-                    _tim.push_back(tmp.arriveTime[stationID[i].second] - tmp.departTime[stationID[i].first]);
+                    prices.push_back(tmp.prices[vec[1][j].second] - tmp.prices[vec[0][i].second]);
+                    _tim.push_back(tmp.arriveTime[vec[1][j].second] - tmp.departTime[vec[0][i].second]);
                     trainID.push_back(tmp.id);
                 }
                 ++i;
@@ -312,35 +312,35 @@ public:
             cout << "0" << endl;
             return false;
         }
-//        sjtu::vector<std::pair<std::pair<int, MyID>, int> > tmpVec;
-//        for (int i = 0; i < trainNum.size(); ++i) {
-//            if (_type) {
-//                tmpVec.push_back(std::make_pair(std::make_pair(prices[i], trainID[i]), i));
-//            } else {
-//                tmpVec.push_back(std::make_pair(std::make_pair(_tim[i], trainID[i]), i));
-//            }
-//        }
-//        if (_type) {
-//            for (size_t i = 0; i < tmpVec.size(); ++i) {
-//                cout << tmpVec[i].first.first << " " << tmpVec[i].first.second << " " << tmpVec[i].second << endl;
-//            }
-//        }
-//        sjtu::sort(tmpVec);
-//        cout << tmpVec.size() << endl;
-//        // static Train tmp;
-//        for (size_t i = 0; i < tmpVec.size(); ++i) {
-//            int cur_id = tmpVec[i].second;
-//            trainSystem.Query(trainNum[cur_id], tmp);
-//            Date realDate = _date - tmp.departTime[stationID[cur_id].first].GetDay();
-//            int del_date = realDate - tmp.saleDate[0];
-//            int max_ticket = 2147483647;
-//            for (size_t j = stationID[cur_id].first; j < stationID[cur_id].second; ++j) {
-//                max_ticket = std::min(max_ticket, tmp.seatNum[del_date][j]);
-//            }
-//            DateTime departTime(realDate, tmp.departTime[stationID[cur_id].first]);
-//            DateTime arriveTime(realDate, tmp.arriveTime[stationID[cur_id].second]);
-//            cout << tmp.id << " " << from << " " << departTime.ToString() <<  " -> " << to << " " << arriveTime.ToString() << " " << prices[cur_id] << " " << max_ticket << endl;
-//        }
+        sjtu::vector<std::pair<std::pair<int, MyID>, int> > tmpVec;
+        for (int i = 0; i < trainNum.size(); ++i) {
+            if (_type) {
+                tmpVec.push_back(std::make_pair(std::make_pair(prices[i], trainID[i]), i));
+            } else {
+                tmpVec.push_back(std::make_pair(std::make_pair(_tim[i], trainID[i]), i));
+            }
+        }
+        if (_type) {
+            for (size_t i = 0; i < tmpVec.size(); ++i) {
+                cout << tmpVec[i].first.first << " " << tmpVec[i].first.second << " " << tmpVec[i].second << endl;
+            }
+        }
+        sjtu::sort(tmpVec);
+        cout << tmpVec.size() << endl;
+        // static Train tmp;
+        for (size_t i = 0; i < tmpVec.size(); ++i) {
+            int cur_id = tmpVec[i].second;
+            trainSystem.Query(trainNum[cur_id], tmp);
+            Date realDate = _date - tmp.departTime[stationID[cur_id].first].GetDay();
+            int del_date = realDate - tmp.saleDate[0];
+            int max_ticket = 2147483647;
+            for (size_t j = stationID[cur_id].first; j < stationID[cur_id].second; ++j) {
+                max_ticket = std::min(max_ticket, tmp.seatNum[del_date][j]);
+            }
+            DateTime departTime(realDate, tmp.departTime[stationID[cur_id].first]);
+            DateTime arriveTime(realDate, tmp.arriveTime[stationID[cur_id].second]);
+            cout << tmp.id << " " << from << " " << departTime.ToString() <<  " -> " << to << " " << arriveTime.ToString() << " " << prices[cur_id] << " " << max_ticket << endl;
+        }
         return true;
     }
     bool Compare(int price, int _tim, const MyID &id_1, const MyID &id_2, int cur_price, int cur_tim, const MyID &cur_id_1, const MyID &cur_id_2, bool _type) {
