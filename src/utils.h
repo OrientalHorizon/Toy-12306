@@ -40,39 +40,35 @@ namespace sjtu {
         return l;
     }
 
-    template<class T, class Compare = std::less<T>>
-    void MergeSort(vector<T> &vec, int l, int r, T *arr) {
-        if (l == r) {
-            return;
-        }
-        int mid = (l + r) >> 1;
-        MergeSort(vec, l, mid, arr);
-        MergeSort(vec, mid + 1, r, arr);
-        int i = l, j = mid + 1, k = l;
-        while (i <= mid && j <= r) {
-            if (Compare{}(vec[i], vec[j])) {
-                arr[k++] = vec[i++];
-            }
-            else {
-                arr[k++] = vec[j++];
-            }
-        }
-        while (i <= mid) {
-            arr[k++] = vec[i++];
-            // ans += (long long)(mid - i + 1);
-        }
-        while (j <= r) {
-            arr[k++] = vec[j++];
-        }
-        for (int i = l; i <= r; ++i) {
-            vec[i] = arr[i];
-        }
-    }
+
     template<class T>
     void sort(vector<T> &vec) {
         T *arr = new T[vec.size()];
-        MergeSort<T>(vec, 0, vec.size() - 1, arr);
+        // MergeSort<T>(vec, 0, vec.size() - 1, arr);
         delete[] arr;
+    }
+    template <class T>
+    void quick_sort(vector<T> &arr, const int len) {
+        if (len <= 1) return;
+        // 随机选择基准（pivot）
+        const T pivot = arr[rand() % len];
+        // i：当前操作的元素下标
+        // arr[0, j)：存储小于 pivot 的元素
+        // arr[k, len)：存储大于 pivot 的元素
+        int i = 0, j = 0, k = len;
+        // 完成一趟三路快排，将序列分为：
+        // 小于 pivot 的元素 | 等于 pivot 的元素 | 大于 pivot 的元素
+        while (i < k) {
+            if (arr[i] < pivot)
+                swap(arr[i++], arr[j++]);
+            else if (pivot < arr[i])
+                swap(arr[i], arr[--k]);
+            else
+                i++;
+        }
+        // 递归完成对于两个子序列的快速排序
+        quick_sort(arr, j);
+        quick_sort(arr + k, len - k);
     }
 }
 
