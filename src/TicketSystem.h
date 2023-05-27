@@ -275,7 +275,11 @@ public:
                                                     trainSystem.stationIndex.Find(to)};
         // sjtu::vector<int> trainID;
         sjtu::vector<std::pair<int, int>> stationID;
-        sjtu::vector<Train> trains;
+        // sjtu::vector<Train> trains;
+        sjtu::vector<int> trainNum;
+        sjtu::vector<int> _tim;
+        sjtu::vector<int> prices;
+        sjtu::vector<MyID> trainID;
         Date _date(date);
         size_t i = 0, j = 0;
         static Train tmp;
@@ -283,15 +287,18 @@ public:
             if (vec[0][i].first == vec[1][j].first) {
                 if (vec[0][i].second < vec[1][j].second) {
                     int train_num = vec[0][i].first;
-                    trainSystem.Query(train_num, tmp);
+                    trainSystem.QueryDate(train_num, tmp);
                     // 还要读进来到达时间才能判断当天发车的情况
                     Date l = tmp.saleDate[0] + tmp.departTime[vec[0][i].second].GetDay(), r = tmp.saleDate[1] + tmp.departTime[vec[0][i].second].GetDay();
                     if (_date < l || r < _date) {
                         ++i, ++j;
                         continue;
                     }
-                    trains.push_back(tmp);
+                    trainNum.push_back(train_num);
                     stationID.push_back(std::make_pair(vec[0][i].second, vec[1][j].second));
+                    prices.push_back(tmp.prices[stationID[i].second] - tmp.prices[stationID[i].first]);
+                    _tim.push_back(tmp.arriveTime[stationID[i].second] - tmp.departTime[stationID[i].first]);
+                    trainID.push_back(tmp.id);
                 }
                 ++i;
                 ++j;
@@ -301,25 +308,17 @@ public:
                 ++j;
             }
         }
-        if (trains.empty()) {
+        if (trainNum.empty()) {
             cout << "0" << endl;
             return false;
         }
-        sjtu::vector<int> _tim;
-        _tim.resize(trains.size());
-        sjtu::vector<int> prices;
-        prices.resize(trains.size());
-        for (size_t i = 0; i < trains.size(); ++i) {
-            const Train &tmp = trains[i];
-            prices.push_back(tmp.prices[stationID[i].second] - tmp.prices[stationID[i].first]);
-            _tim.push_back(tmp.arriveTime[stationID[i].second] - tmp.departTime[stationID[i].first]);
-        }
-        std::vector<std::pair<std::pair<int, MyID>, int> > tmpVec;
-        for (size_t i = 0; i < trains.size(); ++i) {
+        sjtu::vector<std::pair<std::pair<int, MyID>, int> > tmpVec;
+        tmpVec.resize(trainNum.size());
+        for (int i = 0; i < trainNum.size(); ++i) {
             if (_type) {
-                tmpVec.emplace_back(std::make_pair(prices[i],trains[i].id), i);
+                tmpVec.push_back(std::make_pair(std::make_pair(prices[i], trainID[i]), i));
             } else {
-                tmpVec.emplace_back(std::make_pair(_tim[i],trains[i].id), i);
+                tmpVec.push_back(std::make_pair(std::make_pair(_tim[i], trainID[i]), i));
             }
         }
 //        if (_type) {
@@ -327,19 +326,21 @@ public:
 //                cout << tmpVec[i].first.first << " " << tmpVec[i].first.second << " " << tmpVec[i].second << endl;
 //            }
 //        }
-        std::sort(tmpVec.begin(), tmpVec.end(), std::less<std::pair<std::pair<int, MyID>, int> >());
+        sjtu::sort(tmpVec);
         cout << tmpVec.size() << endl;
+        // static Train tmp;
         for (size_t i = 0; i < tmpVec.size(); ++i) {
             int cur_id = tmpVec[i].second;
-            Date realDate = _date - trains[cur_id].departTime[stationID[cur_id].first].GetDay();
-            int del_date = realDate - trains[cur_id].saleDate[0];
+            trainSystem.Query(trainNum[cur_id], tmp);
+            Date realDate = _date - tmp.departTime[stationID[cur_id].first].GetDay();
+            int del_date = realDate - tmp.saleDate[0];
             int max_ticket = 2147483647;
             for (size_t j = stationID[cur_id].first; j < stationID[cur_id].second; ++j) {
-                max_ticket = std::min(max_ticket, trains[cur_id].seatNum[del_date][j]);
+                max_ticket = std::min(max_ticket, tmp.seatNum[del_date][j]);
             }
-            DateTime departTime(realDate, trains[cur_id].departTime[stationID[cur_id].first]);
-            DateTime arriveTime(realDate, trains[cur_id].arriveTime[stationID[cur_id].second]);
-            cout << trains[cur_id].id << " " << from << " " << departTime.ToString() <<  " -> " << to << " " << arriveTime.ToString() << " " << prices[cur_id] << " " << max_ticket << endl;
+            DateTime departTime(realDate, tmp.departTime[stationID[cur_id].first]);
+            DateTime arriveTime(realDate, tmp.arriveTime[stationID[cur_id].second]);
+            cout << tmp.id << " " << from << " " << departTime.ToString() <<  " -> " << to << " " << arriveTime.ToString() << " " << prices[cur_id] << " " << max_ticket << endl;
         }
         return true;
     }
