@@ -12,9 +12,9 @@ struct User {
     MyID id;
     MyString password, name, mailAddr;
     int priv; // [0, 10]
-    User() = default;
+    User() : priv(-1) {}
     User(const MyID &_id, const MyString &_password, const MyString &_name, const MyString &_mailAddr, int _priv) :
-        id(_id), password(password), name(name), mailAddr(mailAddr), priv(priv) {}
+        id(_id), password(_password), name(_name), mailAddr(_mailAddr), priv(_priv) {}
 };
 
 class UserSystem {
@@ -152,16 +152,16 @@ public:
             cout << "-1" << endl;
             return false;
         }
-        if (pwd != "") cur.password = pwd;
-        if (name != "") cur.name = name;
-        if (mailAddr != "") cur.mailAddr = mailAddr;
+        if (!pwd.empty()) cur.password = pwd;
+        if (!name.empty()) cur.name = name;
+        if (!mailAddr.empty()) cur.mailAddr = mailAddr;
         if (priv != -1) cur.priv = priv;
         _file.seekp(4 + pos * sizeof(User));
         _file.write(reinterpret_cast<const char *>(&cur), sizeof(cur));
         cout << cur.id << " " << cur.name << " " << cur.mailAddr << " " << cur.priv << endl;
         return true;
     }
-    bool AddUser(const std::string &curID, const std::string &ID, const std::string &pwd, const std::string &name, const std::string &mailAddr, const int priv, const std::string &time_stamp) {
+    bool AddUser(const std::string &curID, const std::string &ID, const std::string &pwd, const std::string &name, const std::string &mailAddr, const int priv) {
         MyID cur_id(ID);
         if (n == -1) {
             User cur;
@@ -176,33 +176,25 @@ public:
             cout << "0" << endl;
             return true;
         }
-        // cout << time_stamp << endl;
-//        if (time_stamp == "[6728]") {
-//            cout << curID << endl;
-//        }
-        if (priv == -1 || curID == "") {
+        if (priv == -1 || curID.empty()) {
             cout << "-1" << endl;
             return false;
         }
         MyID curuser_id(curID);
         static User cur_user, cur;
         if (Exists(curuser_id, cur_user) == -1) {
-            // cout << "?" << endl;
             cout << "-1" << endl;
             return false;
         }
         if (Logged(curuser_id) == -1) {
-            // cout << "??" << endl;
             cout << "-1" << endl;
             return false;
         }
         if (cur_user.priv <= priv) {
-            // cout << "???" << endl;
             cout << "-1" << endl;
             return false;
         }
         if (Exists(cur_id, cur) != -1) {
-            // cout << "????" << endl;
             cout << "-1" << endl;
             return false;
         }

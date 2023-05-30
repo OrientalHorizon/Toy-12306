@@ -15,7 +15,7 @@ private:
     int date;
 public:
     explicit Date() : date(0) {}
-    Date(const std::string &str) {
+    explicit Date(const std::string &str) {
         // mm-dd
         int month = (str[0] - '0') * 10 + str[1] - '0';
         int day = (str[3] - '0') * 10 + str[4] - '0';
@@ -179,7 +179,7 @@ private:
 public:
     // string format: mm-dd hh:mm
     DateTime() : date(0), _time(0) {}
-    DateTime(const std::string &str) {
+    explicit DateTime(const std::string &str) {
         // mm-dd
         int month = (str[0] - '0') * 10 + str[1] - '0';
         int day = (str[3] - '0') * 10 + str[4] - '0';

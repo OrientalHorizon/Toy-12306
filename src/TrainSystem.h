@@ -76,23 +76,19 @@ public:
         _file.seekg(4 + pos * sizeof(Train));
         _file.read(reinterpret_cast<char *>(&cur), sizeof(cur));
     }
-    void QueryDate(int pos, Train &cur) {
-        _file.seekg(4 + pos * sizeof(Train) + sizeof(MyID) + sizeof(char));
-        _file.read(reinterpret_cast<char *>(&cur.saleDate), sizeof(cur.saleDate));
-    }
     void Modify(int pos, Train &cur) {
         _file.seekp(4 + pos * sizeof(Train));
         _file.write(reinterpret_cast<const char *>(&cur), sizeof(cur));
     }
     bool AddTrain(const std::string &ID, const int stationNum, const int seatNum, const std::string &stations, const std::string &prices, const std::string &startTime,
                   const std::string &travelTimes, const std::string &stopoverTimes, const std::string &saleDate, const char _type) {
-        MyID cur_id(ID);
+        MyID curID(ID);
         Train cur;
-        if (Exists(cur_id, cur) != -1) { // id 已经被占了
+        if (Exists(curID, cur) != -1) { // id 已经被占了
             cout << "-1" << endl;
             return false;
         }
-        cur.id = cur_id;
+        cur.id = curID;
         cur.stationNum = stationNum;
         cur.type = _type;
         std::stringstream ss;
@@ -152,16 +148,16 @@ public:
                 cur.seatNum[i][j] = seatNum;
             }
         }
-        trainIndex.realInsert(std::make_pair(cur_id, ++n));
+        trainIndex.realInsert(std::make_pair(curID, ++n));
         _file.seekp(4 + n * sizeof(Train));
         _file.write(reinterpret_cast<const char *>(&cur), sizeof(cur));
         cout << "0" << endl;
         return true;
     }
     bool DeleteTrain(const std::string &ID) {
-        MyID cur_id(ID);
+        MyID curID(ID);
         Train cur;
-        int tmp_int = Exists(cur_id, cur);
+        int tmp_int = Exists(curID, cur);
         if (tmp_int == -1) {
             cout << "-1" << endl;
             return false;
@@ -170,14 +166,14 @@ public:
             cout << "-1" << endl;
             return false;
         }
-        trainIndex.realDelete(std::make_pair(cur_id, tmp_int));
+        trainIndex.realDelete(std::make_pair(curID, tmp_int));
         cout << "0" << endl;
         return true;
     }
     bool ReleaseTrain(const std::string &ID) {
-        MyID cur_id(ID);
+        MyID curID(ID);
         Train cur;
-        int tmp_int = Exists(cur_id, cur);
+        int tmp_int = Exists(curID, cur);
         if (tmp_int == -1 || cur.released) {
             cout << "-1" << endl;
             return false;
@@ -192,9 +188,9 @@ public:
         return true;
     }
     bool QueryTrain(const std::string &ID, const std::string &date) {
-        MyID cur_id(ID);
+        MyID curID(ID);
         Train cur;
-        int tmp_int = Exists(cur_id, cur);
+        int tmp_int = Exists(curID, cur);
         if (tmp_int == -1) {
             cout << "-1" << endl;
             return false;
@@ -205,7 +201,7 @@ public:
             cout << "-1" << endl;
             return false;
         }
-        cout << cur_id << " " << cur.type << endl;
+        cout << curID << " " << cur.type << endl;
         for (int i = 0; i < cur.stationNum; ++i) {
             cout << cur.stations[i] << " ";
             if (i == 0) {

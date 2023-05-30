@@ -31,17 +31,13 @@ signed main() {
     freopen("3-1.in", "r", stdin);
     freopen("3-2.out", "w", stdout);
 #endif
-    // freopen("1.in", "r", stdin);
-
     std::string line;
     std::string cmd;
     std::string time_stamp;
-    bool is_first = true;
     while (getline(std::cin, line)) {
         std::stringstream ss;
         ss.clear();
         ss << line;
-//        cout << "6" << ss.str() << endl;
         ss >> time_stamp;
         // Time stamp
         cout << time_stamp << " ";
@@ -88,7 +84,7 @@ signed main() {
                     }
                 }
             }
-            userSystem.AddUser(cur_username, username, password, name, mailAddr, privilege, time_stamp);
+            userSystem.AddUser(cur_username, username, password, name, mailAddr, privilege);
         }
         else if (cmd == "login") {
             std::string tmp, username, password;
@@ -306,7 +302,7 @@ signed main() {
                     }
                 }
             }
-            ticketSystem.QueryTransfer(date, from, to, _type, time_stamp);
+            ticketSystem.QueryTransfer(date, from, to, _type);
         }
         else if (cmd == "buy_ticket") {
             std::string tmp, username, trainID, date, from, to;
@@ -352,7 +348,7 @@ signed main() {
                     }
                 }
             }
-            ticketSystem.BuyTicket(username, trainID, date, from, to, num, que, time_stamp);
+            ticketSystem.BuyTicket(username, trainID, date, from, to, num, que);
         }
         else if (cmd == "query_order") {
             std::string tmp, username;
@@ -374,7 +370,7 @@ signed main() {
                     }
                 }
             }
-            ticketSystem.RefundTicket(username, num, time_stamp);
+            ticketSystem.RefundTicket(username, num);
         }
         else {
             throw sjtu::exception("", "Invalid command!");

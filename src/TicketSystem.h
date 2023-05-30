@@ -18,7 +18,7 @@ extern TrainSystem trainSystem;
 
 struct Order {
     int status = 0; // 1: 成功，2: 候补，-1: 退票
-    int user_num, train_num, del_date;
+    int train_num, del_date;
     int stationID[2];
     int unit_price, num;
     MyID userID, trainID;
@@ -60,7 +60,7 @@ public:
         _file.write(reinterpret_cast<const char *>(&n), sizeof(n));
         _file.close();
     }
-    bool BuyTicket(const std::string &username, const std::string &ID, const std::string &date, const std::string &from, const std::string &to, const int num, const bool que, const std::string &time_stamp) {
+    bool BuyTicket(const std::string &username, const std::string &ID, const std::string &date, const std::string &from, const std::string &to, const int num, const bool que) {
         MyID userID(username), trainID(ID);
         int user_num = userSystem.Logged(userID);
         if (user_num == -1) {
@@ -96,14 +96,7 @@ public:
             return false;
         }
         bool enough_ticket = true;
-//        if (time_stamp == (std::string)"[126044]") {
-//            cout << "fuck" << endl;
-//        }
         for (int i = stationID[0]; i < stationID[1]; ++i) {
-            // if (ID == "LeavesofGrass") {
-                // cout << cur.seatNum[del_date][i] << endl;
-                // cout << "num = " << num << endl;
-            // }
             if (cur.seatNum[del_date][i] < num) {
                 enough_ticket = false;
                 break;
@@ -117,7 +110,6 @@ public:
         static Order tmp;
         tmp.userID = userID;
         tmp.trainID = trainID;
-        tmp.user_num = user_num;
         tmp.train_num = train_num;
         tmp.realDate = _date - cur.departTime[stationID[0]].GetDay();
         tmp.del_date = del_date;
@@ -194,7 +186,7 @@ public:
         }
         return true;
     }
-    bool RefundTicket(const std::string &username, const int _num, const std::string &time_stamp) {
+    bool RefundTicket(const std::string &username, const int _num) {
         MyID userID(username);
         int user_num = userSystem.Logged(userID);
         if (user_num == -1) {
@@ -230,11 +222,7 @@ public:
         for (int i = cur.stationID[0]; i < cur.stationID[1]; ++i) {
             cur_train.seatNum[cur.del_date][i] += cur.num;
         }
-//        cout << cur_train.stationNum << endl;
-//        for (int i = 0; i < 100; ++i) {
-//            cout << cur_train.seatNum[cur.del_date][i] << " ";
-//        }
-//        cout << endl;
+
         // 遍历候补队列
         sjtu::vector<int> ques = queueIndex.Find(std::make_pair(cur.train_num, cur.del_date));
         Order tmp;
@@ -259,10 +247,6 @@ public:
             _file.write(reinterpret_cast<const char *>(&tmp), sizeof(tmp.status));
             queueIndex.realDelete(std::make_pair(std::make_pair(tmp.train_num, tmp.del_date), ques[i]));
         }
-//        for (int i = 0; i < 100; ++i) {
-//            cout << cur_train.seatNum[cur.del_date][i] << " ";
-//        }
-//        cout << endl;
         trainSystem.Modify(cur.train_num, cur_train);
         _file.seekp(4 + orders[real_num] * sizeof(Order));
         _file.write(reinterpret_cast<char *>(&cur.status), sizeof(cur.status));
@@ -273,9 +257,7 @@ public:
         // _type: true, cost; false, time
         sjtu::vector<std::pair<int, int>> vec[2] = {trainSystem.stationIndex.Find(from),
                                                     trainSystem.stationIndex.Find(to)};
-        // sjtu::vector<int> trainID;
         sjtu::vector<std::pair<int, int>> stationID;
-        // sjtu::vector<Train> trains;
         sjtu::vector<int> trainNum;
         sjtu::vector<int> _tim;
         sjtu::vector<int> prices;
@@ -320,14 +302,9 @@ public:
                 tmpVec.push_back(std::make_pair(std::make_pair(_tim[i], trainID[i]), i));
             }
         }
-//        if (_type) {
-//            for (size_t i = 0; i < tmpVec.size(); ++i) {
-//                cout << tmpVec[i].first.first << " " << tmpVec[i].first.second << " " << tmpVec[i].second << endl;
-//            }
-//        }
+
         sjtu::sort(tmpVec);
         cout << tmpVec.size() << endl;
-        // static Train tmp;
         for (size_t i = 0; i < tmpVec.size(); ++i) {
             int cur_id = tmpVec[i].second;
             trainSystem.Query(trainNum[cur_id], tmp);
@@ -371,7 +348,7 @@ public:
             return cur_id_2 < id_2;
         }
     }
-    bool QueryTransfer(const std::string &date, const std::string &from, const std::string &to, bool _type, const std::string &time_stamp) {
+    bool QueryTransfer(const std::string &date, const std::string &from, const std::string &to, bool _type) {
         // _type: true, cost; false, time
         // 方式：from 往后扫，to 往前扫；找到相同的车站，然后判断时间是否合适
         Date _date(date);
@@ -407,11 +384,8 @@ public:
                         if (!(cur_1.stations[k1] == cur_2.stations[k2])) {
                             continue;
                         }
+
                         // now check whether time is available
-//                        if (time_stamp == "[38948]") {
-//                            cout << "fuck" << endl;
-//                            cout << cur_1.stations[k1] << " " << cur_2.stations[k2] << endl;
-//                        }
                         Date l1 = _date + (cur_1.arriveTime[k1].GetDay() - cur_1.departTime[vec[0][i].second].GetDay());
                         Time l2 = cur_1.arriveTime[k1].EraseDay();
                         DateTime l3(l1, l2); // 第二趟车必须不早于这个时间发车
