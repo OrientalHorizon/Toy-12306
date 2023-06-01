@@ -31,6 +31,9 @@ signed main() {
     freopen("3-1.in", "r", stdin);
     freopen("3-2.out", "w", stdout);
 #endif
+    std::ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    cout.tie(nullptr);
     std::string line;
     std::string cmd;
     std::string time_stamp;
